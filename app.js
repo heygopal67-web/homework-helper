@@ -18,6 +18,11 @@ const typeInCard = document.getElementById("typeInCard");
 const speakBtn = document.getElementById("speakBtn");
 const stopSpeakBtn = document.getElementById("stopSpeakBtn");
 const resultsToolbar = document.getElementById("resultsToolbar");
+const sketchToggleBtn = document.getElementById("sketchToggleBtn");
+const sketchOverlay = document.getElementById("sketchOverlay");
+const sketchCanvas = document.getElementById("sketchCanvas");
+const sketchClearBtn = document.getElementById("sketchClearBtn");
+const sketchCloseBtn = document.getElementById("sketchCloseBtn");
 
 // Camera modal elements
 const cameraModal = document.getElementById("cameraModal");
@@ -490,3 +495,77 @@ window.addEventListener("DOMContentLoaded", () => {
   sidebar.classList.toggle("hidden", hidden);
   layout.classList.toggle("sidebar-hidden", hidden);
 });
+
+// Sketch overlay logic
+let sketchCtx = null;
+let isDrawing = false;
+let lastX = 0,
+  lastY = 0;
+
+function resizeSketchCanvas() {
+  if (!sketchCanvas) return;
+  const dpr = window.devicePixelRatio || 1;
+  sketchCanvas.width = Math.floor(sketchCanvas.clientWidth * dpr);
+  sketchCanvas.height = Math.floor(sketchCanvas.clientHeight * dpr);
+  sketchCtx = sketchCanvas.getContext("2d");
+  sketchCtx.scale(dpr, dpr);
+  sketchCtx.lineJoin = "round";
+  sketchCtx.lineCap = "round";
+  sketchCtx.lineWidth = 4;
+  sketchCtx.strokeStyle = "#ef4444";
+}
+
+function startDraw(e) {
+  isDrawing = true;
+  const rect = sketchCanvas.getBoundingClientRect();
+  lastX = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+  lastY = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+}
+function draw(e) {
+  if (!isDrawing) return;
+  const rect = sketchCanvas.getBoundingClientRect();
+  const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+  const y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+  sketchCtx.beginPath();
+  sketchCtx.moveTo(lastX, lastY);
+  sketchCtx.lineTo(x, y);
+  sketchCtx.stroke();
+  lastX = x;
+  lastY = y;
+}
+function endDraw() {
+  isDrawing = false;
+}
+
+sketchToggleBtn?.addEventListener("click", () => {
+  if (!sketchOverlay) return;
+  const willShow = !sketchOverlay.classList.contains("show");
+  sketchOverlay.classList.toggle("show", willShow);
+  sketchOverlay.setAttribute("aria-hidden", String(!willShow));
+  if (willShow) {
+    resizeSketchCanvas();
+  }
+});
+
+sketchClearBtn?.addEventListener("click", () => {
+  if (sketchCtx && sketchCanvas) {
+    sketchCtx.clearRect(0, 0, sketchCanvas.width, sketchCanvas.height);
+  }
+});
+sketchCloseBtn?.addEventListener("click", () => {
+  sketchOverlay?.classList.remove("show");
+  sketchOverlay?.setAttribute("aria-hidden", "true");
+});
+
+window.addEventListener("resize", () => {
+  if (sketchOverlay?.classList.contains("show")) resizeSketchCanvas();
+});
+
+// Pointer events for drawing
+sketchCanvas?.addEventListener("mousedown", startDraw);
+sketchCanvas?.addEventListener("touchstart", startDraw, { passive: true });
+sketchCanvas?.addEventListener("mousemove", draw);
+sketchCanvas?.addEventListener("touchmove", draw, { passive: true });
+["mouseup", "mouseleave", "touchend", "touchcancel"].forEach((ev) =>
+  sketchCanvas?.addEventListener(ev, endDraw)
+);

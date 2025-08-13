@@ -51,6 +51,14 @@
             <i class="fa-solid fa-bars-staggered icon" aria-hidden="true"></i
             ><span>History</span>
           </button>
+          <button
+            id="sketchToggleBtn"
+            class="btn ghost small"
+            title="Sketch / Highlight on screen"
+          >
+            <i class="fa-solid fa-pencil icon" aria-hidden="true"></i
+            ><span>Sketch</span>
+          </button>
         </div>
       </div>
     </header>
@@ -132,6 +140,21 @@
         </aside>
       </div>
     </main>
+
+    <!-- Sketch / Highlight Overlay -->
+    <div id="sketchOverlay" class="sketch-overlay" aria-hidden="true">
+      <canvas id="sketchCanvas"></canvas>
+      <div class="sketch-toolbar">
+        <button id="sketchClearBtn" class="btn small">
+          <i class="fa-solid fa-eraser icon" aria-hidden="true"></i
+          ><span>Clear</span>
+        </button>
+        <button id="sketchCloseBtn" class="btn primary small">
+          <i class="fa-solid fa-xmark icon" aria-hidden="true"></i
+          ><span>Done</span>
+        </button>
+      </div>
+    </div>
 
     <!-- Webcam Modal -->
     <div id="cameraModal" class="modal" aria-hidden="true">
