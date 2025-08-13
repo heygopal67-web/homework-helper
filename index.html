@@ -115,8 +115,12 @@
             class="btn ghost small fab"
             title="Show or hide history"
           >
-            <i class="fa-solid fa-bars-staggered icon" aria-hidden="true"></i
+            <i class="fa-solid fa-clock-rotate-left icon" aria-hidden="true"></i
             ><span class="label">History</span>
+          </button>
+          <button id="helpBtn" class="btn ghost small fab" title="Help & info">
+            <i class="fa-solid fa-circle-info icon" aria-hidden="true"></i>
+            <span class="label">Help</span>
           </button>
         </div>
       </div>
@@ -142,7 +146,11 @@
 
           <section class="type-in card hidden" id="typeInCard">
             <h3 class="type-title">
-              <i class="fa-solid fa-keyboard icon" aria-hidden="true"></i
+              <i
+                class="fa-solid fa-keyboard icon"
+                style="margin-right: 8px"
+                aria-hidden="true"
+              ></i
               ><span>Type your question</span>
             </h3>
             <textarea
@@ -180,6 +188,14 @@
               <i class="fa-solid fa-stop icon" aria-hidden="true"></i
               ><span>Stop</span>
             </button>
+            <button
+              id="closeResultsBtn"
+              class="btn ghost small"
+              title="Close results"
+            >
+              <i class="fa-solid fa-xmark icon" aria-hidden="true"></i
+              ><span>Close</span>
+            </button>
           </div>
 
           <section id="results" class="results" aria-live="polite"></section>
@@ -199,6 +215,59 @@
         </aside>
       </div>
     </main>
+
+    <!-- Minimal coach overlay pointing to the mode toggle -->
+    <div id="coachOverlay" class="coach-overlay" aria-hidden="true"></div>
+
+    <!-- Help Modal -->
+    <div id="helpModal" class="modal" aria-hidden="true">
+      <div class="modal-backdrop" id="closeHelpModal"></div>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>How to use SolveBuddy</h3>
+          <button class="icon-btn" id="xHelpModal" aria-label="Close">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <div class="camera-area">
+          <div class="welcome-body">
+            <ul>
+              <li>
+                <strong>Basic</strong> vs <strong>Detailed</strong>: use the
+                switch at the top. Basic is quick (3–5 steps); Detailed is
+                deeper (6–9 steps with examples).
+              </li>
+              <li>
+                <strong>Take/Upload/Type</strong>: choose how to send your
+                question. We run OCR for photos.
+              </li>
+              <li>
+                <strong>Read Aloud</strong>: after an explanation appears, use
+                the toolbar to hear it.
+              </li>
+              <li>
+                <strong>History</strong>: your last 5 questions are saved
+                locally on this device only.
+              </li>
+              <li>
+                <strong>Sketch</strong>: draw highlights on screen, then tap
+                Done to close.
+              </li>
+              <li>
+                <strong>Theme/Font</strong>: customize from the top controls and
+                bottom-left buttons.
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button id="helpOkBtn" class="btn primary small">
+            <i class="fa-solid fa-check icon" aria-hidden="true"></i>
+            <span>Got it</span>
+          </button>
+        </div>
+      </div>
+    </div>
 
     <!-- Sketch / Highlight Overlay -->
     <div id="sketchOverlay" class="sketch-overlay" aria-hidden="true">

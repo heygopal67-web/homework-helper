@@ -18,6 +18,7 @@ const typeInCard = document.getElementById("typeInCard");
 const speakBtn = document.getElementById("speakBtn");
 const stopSpeakBtn = document.getElementById("stopSpeakBtn");
 const resultsToolbar = document.getElementById("resultsToolbar");
+const closeResultsBtn = document.getElementById("closeResultsBtn");
 const sketchToggleBtn = document.getElementById("sketchToggleBtn");
 const sketchOverlay = document.getElementById("sketchOverlay");
 const sketchCanvas = document.getElementById("sketchCanvas");
@@ -30,6 +31,17 @@ const bgmIcon = document.getElementById("bgmIcon");
 const bgmLabel = document.getElementById("bgmLabel");
 const themeToggleBtn = document.getElementById("themeToggleBtn");
 const themeIcon = document.getElementById("themeIcon");
+// Welcome modal elements
+const welcomeModal = document.getElementById("welcomeModal");
+const closeWelcomeModal = document.getElementById("closeWelcomeModal");
+const xWelcomeModal = document.getElementById("xWelcomeModal");
+const welcomeOkBtn = document.getElementById("welcomeOkBtn");
+// Help modal elements
+const helpBtn = document.getElementById("helpBtn");
+const helpModal = document.getElementById("helpModal");
+const closeHelpModal = document.getElementById("closeHelpModal");
+const xHelpModal = document.getElementById("xHelpModal");
+const helpOkBtn = document.getElementById("helpOkBtn");
 
 // Camera modal elements
 const cameraModal = document.getElementById("cameraModal");
@@ -49,14 +61,21 @@ const STORAGE_KEYS = {
   fontClass: "hhai_font_class",
 };
 
-function setProgress(message) {
-  if (message) {
-    progressArea.classList.add("loading");
-    progressArea.textContent = message;
-  } else {
-    progressArea.classList.remove("loading");
+function setProgress(message, state) {
+  if (!progressArea) return;
+  if (!message) {
+    progressArea.classList.remove("loading", "done");
     progressArea.textContent = "";
+    return;
   }
+  const msg = String(message);
+  const isDone = state === "done" || /\b(done|completed|success)\b/i.test(msg);
+  const isLoading =
+    state === "loading" ||
+    /(\.{3}$)|\b(OCR:|Recognizing|Asking|Starting|Preparing)\b/i.test(msg);
+  progressArea.classList.toggle("loading", !!isLoading && !isDone);
+  progressArea.classList.toggle("done", !!isDone);
+  progressArea.textContent = msg;
 }
 
 // No key storage; key is embedded above per request
@@ -103,10 +122,7 @@ function loadHistory() {
 
 function saveHistory(historyItems) {
   try {
-    localStorage.setItem(
-      STORAGE_KEYS.history,
-      JSON.stringify(historyItems.slice(0, 5))
-    );
+    localStorage.setItem(STORAGE_KEYS.history, JSON.stringify(historyItems));
   } catch {}
 }
 
@@ -119,7 +135,7 @@ function addToHistory(questionText, steps, mode) {
     mode,
     ts: new Date().toISOString(),
   };
-  const updated = [entry, ...items].slice(0, 5);
+  const updated = [entry, ...items];
   saveHistory(updated);
   renderHistory();
 }
@@ -262,8 +278,23 @@ function renderHistory() {
       window.scrollTo({ top: 0, behavior: "smooth" });
     });
 
+    // delete control
+    const delBtn = document.createElement("button");
+    delBtn.className = "btn small";
+    delBtn.textContent = "Delete";
+    delBtn.addEventListener("click", () => {
+      const remaining = loadHistory().filter((h) => h.id !== item.id);
+      saveHistory(remaining);
+      renderHistory();
+    });
+
     head.appendChild(h4);
-    head.appendChild(viewBtn);
+    const right = document.createElement("div");
+    right.style.display = "flex";
+    right.style.gap = "8px";
+    right.appendChild(viewBtn);
+    right.appendChild(delBtn);
+    head.appendChild(right);
     el.appendChild(head);
     el.appendChild(meta);
     historyList.appendChild(el);
@@ -395,7 +426,7 @@ async function handleImageToHelp(fileOrCanvas) {
     const aiText = await callGemini(text, detailedMode, apiKey);
     const steps = splitIntoSteps(aiText);
     renderSteps(steps);
-    setProgress("Done!");
+    setProgress("Done!", "done");
 
     addToHistory(text, steps, detailedMode);
   } catch (err) {
@@ -417,7 +448,7 @@ async function handleTypedQuestion() {
     const aiText = await callGemini(text, detailedMode);
     const steps = splitIntoSteps(aiText);
     renderSteps(steps);
-    setProgress("Done!");
+    setProgress("Done!", "done");
     if (resultsToolbar)
       resultsToolbar.classList.toggle("hidden", steps.length === 0);
     addToHistory(text, steps, detailedMode);
@@ -516,6 +547,12 @@ speakBtn.addEventListener("click", () => {
   speakStepsWithHighlight();
 });
 stopSpeakBtn.addEventListener("click", stopSpeaking);
+closeResultsBtn?.addEventListener("click", () => {
+  stopSpeaking();
+  clearResults();
+  setProgress("");
+  if (resultsToolbar) resultsToolbar.classList.add("hidden");
+});
 
 // Init
 (function init() {
@@ -554,6 +591,26 @@ window.addEventListener("DOMContentLoaded", () => {
   }
   // Initialize custom rounded font picker
   initCustomFontPicker();
+
+  // Tip bubble removed as requested
+});
+
+// Help modal open/close
+helpBtn?.addEventListener("click", () => {
+  helpModal?.classList.add("show");
+  helpModal?.setAttribute("aria-hidden", "false");
+});
+closeHelpModal?.addEventListener("click", () => {
+  helpModal?.classList.remove("show");
+  helpModal?.setAttribute("aria-hidden", "true");
+});
+xHelpModal?.addEventListener("click", () => {
+  helpModal?.classList.remove("show");
+  helpModal?.setAttribute("aria-hidden", "true");
+});
+helpOkBtn?.addEventListener("click", () => {
+  helpModal?.classList.remove("show");
+  helpModal?.setAttribute("aria-hidden", "true");
 });
 
 // Font switcher
@@ -695,6 +752,41 @@ bgmToggleBtn?.addEventListener("click", () => {
   const current = localStorage.getItem(BGM_KEY) === "1";
   setBgmEnabled(!current);
 });
+
+// Minimal coach bubble helper
+function showCoachBubble() {
+  try {
+    if (!coachOverlay || !detailToggle) return;
+    const host = detailToggle.closest(".mode-toggle");
+    if (!host) return;
+    const rect = host.getBoundingClientRect();
+    const bubble = document.createElement("div");
+    bubble.className = "coach-bubble";
+    bubble.style.left = Math.max(16, rect.left) + "px";
+    bubble.style.top = rect.bottom + 8 + window.scrollY + "px";
+    bubble.innerHTML =
+      "<div><strong>Tip</strong>: Use this switch to choose Basic or Detailed help.</div>";
+    const actions = document.createElement("div");
+    actions.className = "coach-actions";
+    const btn = document.createElement("button");
+    btn.className = "btn small";
+    btn.textContent = "Got it";
+    btn.addEventListener("click", () => {
+      coachOverlay.innerHTML = "";
+      coachOverlay.setAttribute("aria-hidden", "true");
+    });
+    actions.appendChild(btn);
+    bubble.appendChild(actions);
+    coachOverlay.innerHTML = "";
+    coachOverlay.appendChild(bubble);
+    coachOverlay.setAttribute("aria-hidden", "false");
+    // Auto dismiss after 6s
+    setTimeout(() => {
+      coachOverlay.innerHTML = "";
+      coachOverlay.setAttribute("aria-hidden", "true");
+    }, 6000);
+  } catch {}
+}
 
 // Theme toggle (persisted)
 const THEME_KEY = "hhai_theme_dark";
