@@ -39,25 +39,34 @@
       </div>
     </header>
     <main class="container main">
-      <section class="actions">
-        <button id="takePhotoBtn" class="btn primary big">📸 Take Photo</button>
-        <button id="uploadPhotoBtn" class="btn secondary big">
-          ⬆️ Upload Photo
-        </button>
-        <input id="fileInput" type="file" accept="image/*" hidden />
-      </section>
+      <div class="layout">
+        <section class="content">
+          <section class="actions">
+            <button id="takePhotoBtn" class="btn primary big">
+              📸 Take Photo
+            </button>
+            <button id="uploadPhotoBtn" class="btn secondary big">
+              ⬆️ Upload Photo
+            </button>
+            <input id="fileInput" type="file" accept="image/*" hidden />
+          </section>
 
-      <section id="progressArea" class="progress" aria-live="polite"></section>
+          <section
+            id="progressArea"
+            class="progress"
+            aria-live="polite"
+          ></section>
 
-      <section id="results" class="results" aria-live="polite"></section>
-
-      <section class="history">
-        <div class="history-header">
-          <h2>History</h2>
-          <button id="clearHistoryBtn" class="btn ghost small">Clear</button>
-        </div>
-        <div id="historyList" class="history-list"></div>
-      </section>
+          <section id="results" class="results" aria-live="polite"></section>
+        </section>
+        <aside class="sidebar">
+          <div class="history-header">
+            <h2>History</h2>
+            <button id="clearHistoryBtn" class="btn ghost small">Clear</button>
+          </div>
+          <div id="historyList" class="history-list"></div>
+        </aside>
+      </div>
     </main>
 
     <!-- Webcam Modal -->
