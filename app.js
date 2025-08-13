@@ -144,6 +144,45 @@ function clearResults() {
   results.innerHTML = "";
 }
 
+// Image preview helpers
+function ensurePreviewCard() {
+  const existing = document.getElementById("imagePreviewCard");
+  if (existing) return existing;
+  const content = document.querySelector(".content");
+  if (!content) return null;
+  const card = document.createElement("div");
+  card.className = "card preview-card";
+  card.id = "imagePreviewCard";
+  const title = document.createElement("h3");
+  title.className = "type-title";
+  title.textContent = "Image Preview";
+  const img = document.createElement("img");
+  img.id = "imagePreviewImg";
+  img.alt = "Selected image preview";
+  card.appendChild(title);
+  card.appendChild(img);
+  const actionsSection = document.querySelector(".actions");
+  if (actionsSection && actionsSection.parentElement === content) {
+    content.insertBefore(card, actionsSection.nextSibling);
+  } else {
+    content.appendChild(card);
+  }
+  return card;
+}
+
+function showImagePreview(src) {
+  const card = ensurePreviewCard();
+  if (!card) return null;
+  const img = card.querySelector("img#imagePreviewImg");
+  if (img) img.src = src;
+  return img;
+}
+
+function clearImagePreview() {
+  const card = document.getElementById("imagePreviewCard");
+  if (card && card.parentElement) card.parentElement.removeChild(card);
+}
+
 function highlightKeyTerms(text) {
   // Simple highlighting for words like number names, operations, equals, fraction, etc.
   const patterns = [
@@ -500,7 +539,18 @@ function capturePhoto() {
 uploadPhotoBtn.addEventListener("click", () => fileInput.click());
 fileInput.addEventListener("change", () => {
   const file = fileInput.files?.[0];
-  if (file) handleImageToHelp(file);
+  if (file) {
+    const objectUrl = URL.createObjectURL(file);
+    const imgEl = showImagePreview(objectUrl);
+    if (imgEl) {
+      imgEl.onload = () => {
+        try {
+          URL.revokeObjectURL(objectUrl);
+        } catch {}
+      };
+    }
+    handleImageToHelp(file);
+  }
   fileInput.value = "";
 });
 
@@ -526,6 +576,10 @@ captureBtn.addEventListener("click", async () => {
   const canvas = capturePhoto();
   closeCamera();
   if (canvas) {
+    try {
+      const dataUrl = canvas.toDataURL("image/png");
+      showImagePreview(dataUrl);
+    } catch {}
     await handleImageToHelp(canvas);
   }
 });
@@ -552,6 +606,7 @@ closeResultsBtn?.addEventListener("click", () => {
   clearResults();
   setProgress("");
   if (resultsToolbar) resultsToolbar.classList.add("hidden");
+  clearImagePreview();
 });
 
 // Init

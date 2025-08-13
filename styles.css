@@ -218,6 +218,10 @@ input:checked + .slider:before { transform: translateX(24px); }
 .type-actions { display: flex; gap: 8px; margin-top: 10px; }
 .hidden { display: none; }
 
+/* Image preview card */
+.preview-card { margin-top: 18px; }
+.preview-card img { width: 100%; height: auto; border-radius: 10px; display: block; }
+
 .results-toolbar { display: flex; gap: 8px; align-items: center; margin: 6px 0 8px; }
 .results-toolbar.hidden { display: none; }
 
