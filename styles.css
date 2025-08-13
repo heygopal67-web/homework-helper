@@ -148,6 +148,11 @@ input:checked + .slider:before { transform: translateX(24px); }
 #sketchToggleBtn { position: fixed; left: 16px; bottom: 72px; z-index: 60; box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
 #bgmToggleBtn { position: fixed; left: 16px; bottom: 118px; z-index: 60; box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
 
+/* FAB label reveal on hover */
+.fab { display: inline-flex; align-items: center; gap: 0; padding: 10px 12px; overflow: hidden; white-space: nowrap; }
+.fab .label { display: inline-block; width: 0; opacity: 0; margin-left: 0; transition: width .25s ease, opacity .25s ease, margin-left .25s ease; }
+.fab:hover .label { width: 96px; opacity: 1; margin-left: 8px; }
+
 @media (min-width: 960px) {
   .layout { grid-template-columns: 320px 1fr; grid-template-areas: 'sidebar content'; }
   .layout.sidebar-hidden { grid-template-columns: 0 1fr; }

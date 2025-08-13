@@ -597,12 +597,12 @@ function setBgmEnabled(enabled) {
     bgmAudio.play().catch(() => {});
     bgmIcon?.classList.remove("fa-volume-xmark");
     bgmIcon?.classList.add("fa-music");
-    bgmLabel && (bgmLabel.textContent = "Music On");
+    bgmLabel && (bgmLabel.textContent = "Music");
   } else {
     bgmAudio.pause();
     bgmIcon?.classList.remove("fa-music");
     bgmIcon?.classList.add("fa-volume-xmark");
-    bgmLabel && (bgmLabel.textContent = "Music Off");
+    bgmLabel && (bgmLabel.textContent = "Music");
   }
 }
 
