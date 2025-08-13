@@ -249,7 +249,7 @@ function renderHistory() {
     const empty = document.createElement("div");
     empty.className = "history-item mini";
     empty.textContent =
-      "No history yet. Your last 5 explained questions will show here.";
+      "No history yet. Your explained questions will show here.";
     historyList.appendChild(empty);
     return;
   }
