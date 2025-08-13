@@ -25,12 +25,12 @@ body {
 button, input, textarea, select, label { font-family: inherit; }
 
 /* Quick font swaps via class on <html> */
-.font-kalam { font-family: 'Kalam', cursive; }
-.font-patrick { font-family: 'Patrick Hand', cursive; }
-.font-caveat { font-family: 'Caveat', cursive; }
-.font-gochi { font-family: 'Gochi Hand', cursive; }
-.font-shantell { font-family: 'Shantell Sans', cursive; }
-.font-inter { font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial; }
+html.font-kalam { font-family: 'Kalam', cursive !important; }
+html.font-patrick { font-family: 'Patrick Hand', cursive !important; }
+html.font-caveat { font-family: 'Caveat', cursive !important; }
+html.font-gochi { font-family: 'Gochi Hand', cursive !important; }
+html.font-shantell { font-family: 'Shantell Sans', cursive !important; }
+html.font-inter { font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial !important; }
 
 .font-select { border: 1px solid #e5e7eb; border-radius: 9999px; padding: 8px 12px; background: #fff; }
 
@@ -149,9 +149,12 @@ input:checked + .slider:before { transform: translateX(24px); }
 #bgmToggleBtn { position: fixed; left: 16px; bottom: 118px; z-index: 60; box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
 
 /* FAB label reveal on hover */
-.fab { display: inline-flex; align-items: center; gap: 0; padding: 10px 12px; overflow: hidden; white-space: nowrap; }
-.fab .label { display: inline-block; width: 0; opacity: 0; margin-left: 0; transition: width .25s ease, opacity .25s ease, margin-left .25s ease; }
-.fab:hover .label { width: 96px; opacity: 1; margin-left: 8px; }
+.fab { display: inline-flex; align-items: center; gap: 0; padding: 10px; overflow: hidden; white-space: nowrap; }
+.fab, .fab .label { font-family: inherit !important; text-transform: none !important; font-variant: normal !important; letter-spacing: normal !important; }
+.fab .icon { margin-right: 0; }
+.fab .label { display: inline-block; max-width: 0; opacity: 0; margin-left: 0; transition: max-width .25s ease, opacity .25s ease, margin-left .25s ease; font-size: 16px; }
+.fab:hover .icon { margin-right: 4px; }
+.fab:hover .label { max-width: 140px; opacity: 1; margin-left: 4px; }
 
 @media (min-width: 960px) {
   .layout { grid-template-columns: 320px 1fr; grid-template-areas: 'sidebar content'; }

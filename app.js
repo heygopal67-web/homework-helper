@@ -566,11 +566,11 @@ fontPicker?.addEventListener("change", () => {
   } catch {}
 });
 
-// Apply saved font on load
+// Apply saved font on load (or current dropdown value as default)
 (() => {
   try {
     const saved = localStorage.getItem(STORAGE_KEYS.fontClass);
-    if (!saved) return;
+    const toApply = saved || fontPicker?.value || "font-kalam";
     const htmlEl = document.documentElement;
     htmlEl.classList.remove(
       "font-kalam",
@@ -580,8 +580,8 @@ fontPicker?.addEventListener("change", () => {
       "font-shantell",
       "font-inter"
     );
-    htmlEl.classList.add(saved);
-    if (fontPicker) fontPicker.value = saved;
+    htmlEl.classList.add(toApply);
+    if (fontPicker) fontPicker.value = toApply;
   } catch {}
 })();
 
