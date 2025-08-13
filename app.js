@@ -9,9 +9,6 @@ const results = document.getElementById("results");
 const detailToggle = document.getElementById("detailToggle");
 const historyList = document.getElementById("historyList");
 const clearHistoryBtn = document.getElementById("clearHistoryBtn");
-const apiKeyInput = document.getElementById("apiKeyInput");
-const saveKeyBtn = document.getElementById("saveKeyBtn");
-const keyStatus = document.getElementById("keyStatus");
 
 // Camera modal elements
 const cameraModal = document.getElementById("cameraModal");
@@ -22,7 +19,8 @@ const xCameraModal = document.getElementById("xCameraModal");
 const captureBtn = document.getElementById("captureBtn");
 
 const STORAGE_KEYS = {
-  apiKey: "hhai_openai_key",
+  apiKey: "AIzaSyAOqqVRGcnRuz_qVAV0pq_Y6gbhK-9h2wQ",
+  legacyOpenAIKey: "hhai_openai_key",
   history: "hhai_history_v1",
   mode: "hhai_mode_detailed",
 };
@@ -33,7 +31,10 @@ function setProgress(message) {
 
 function readStoredKey() {
   try {
-    return localStorage.getItem(STORAGE_KEYS.apiKey) || "";
+    const gemini = localStorage.getItem(STORAGE_KEYS.apiKey);
+    if (gemini) return gemini;
+    const legacy = localStorage.getItem(STORAGE_KEYS.legacyOpenAIKey);
+    return legacy || "";
   } catch {
     return "";
   }
@@ -57,6 +58,18 @@ function setModeDetailed(val) {
   try {
     localStorage.setItem(STORAGE_KEYS.mode, val ? "1" : "0");
   } catch {}
+}
+
+async function getApiKeyInteractive() {
+  const existing = readStoredKey();
+  if (existing) return existing;
+  const entered = window.prompt(
+    "Enter your Gemini API key (it will be saved locally in this browser):"
+  );
+  const key = (entered || "").trim();
+  if (!key) return "";
+  saveStoredKey(key);
+  return key;
 }
 
 function loadHistory() {
@@ -215,11 +228,10 @@ function buildSystemPrompt(questionText) {
   );
 }
 
-async function callOpenAI(questionText, detailedMode, apiKey) {
+async function callGemini(questionText, detailedMode, apiKey) {
   setProgress("Asking AI for guidance...");
   const systemPrompt = buildSystemPrompt(questionText);
 
-  // In detailed mode, request more steps and richer explanations
   const detailInstruction = detailedMode
     ? " Provide a thorough explanation with about 6–9 steps, include a tiny example and a quick tip where helpful."
     : " Keep it concise with about 3–5 simple steps.";
@@ -227,29 +239,45 @@ async function callOpenAI(questionText, detailedMode, apiKey) {
   const userPrompt =
     "Mode: " + (detailedMode ? "Detailed" : "Basic") + ". " + detailInstruction;
 
-  const response = await fetch("https://api.openai.com/v1/chat/completions", {
+  const url =
+    "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=" +
+    encodeURIComponent(apiKey);
+
+  const body = {
+    contents: [
+      {
+        role: "user",
+        parts: [
+          {
+            text: systemPrompt + "\n\n" + userPrompt,
+          },
+        ],
+      },
+    ],
+    generationConfig: {
+      temperature: detailedMode ? 0.6 : 0.4,
+    },
+  };
+
+  const response = await fetch(url, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: "Bearer " + apiKey,
     },
-    body: JSON.stringify({
-      model: "gpt-4o-mini",
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: userPrompt },
-      ],
-      temperature: detailedMode ? 0.6 : 0.4,
-    }),
+    body: JSON.stringify(body),
   });
 
   if (!response.ok) {
     const errText = await response.text().catch(() => "");
-    throw new Error("OpenAI error: " + response.status + " " + errText);
+    throw new Error("Gemini error: " + response.status + " " + errText);
   }
   const data = await response.json();
-  const text = data.choices?.[0]?.message?.content || "";
-  return text.trim();
+  const parts = data?.candidates?.[0]?.content?.parts || [];
+  const text = parts
+    .map((p) => p.text || "")
+    .join("\n")
+    .trim();
+  return text;
 }
 
 function splitIntoSteps(text) {
@@ -284,13 +312,13 @@ async function handleImageToHelp(fileOrCanvas) {
     setProgress("Question detected. Preparing help...");
     const detailedMode = detailToggle.checked;
 
-    const apiKey = readStoredKey() || apiKeyInput.value.trim();
+    const apiKey = await getApiKeyInteractive();
     if (!apiKey) {
-      setProgress("Please add your OpenAI API key (top-right) to proceed.");
+      setProgress("OpenAI API key is required to ask the AI.");
       return;
     }
 
-    const aiText = await callOpenAI(text, detailedMode, apiKey);
+    const aiText = await callGemini(text, detailedMode, apiKey);
     const steps = splitIntoSteps(aiText);
     renderSteps(steps);
     setProgress("Done!");
@@ -367,17 +395,6 @@ detailToggle.addEventListener("change", () => {
   setModeDetailed(detailToggle.checked);
 });
 
-saveKeyBtn.addEventListener("click", () => {
-  const key = apiKeyInput.value.trim();
-  if (!key) {
-    keyStatus.textContent = "Enter a key first.";
-    return;
-  }
-  saveStoredKey(key);
-  keyStatus.textContent = "Saved locally.";
-  setTimeout(() => (keyStatus.textContent = ""), 1800);
-});
-
 clearHistoryBtn.addEventListener("click", () => {
   saveHistory([]);
   renderHistory();
@@ -386,7 +403,5 @@ clearHistoryBtn.addEventListener("click", () => {
 // Init
 (function init() {
   detailToggle.checked = getModeDetailed();
-  const savedKey = readStoredKey();
-  if (savedKey) apiKeyInput.value = savedKey;
   renderHistory();
 })();
