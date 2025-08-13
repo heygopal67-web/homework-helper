@@ -13,6 +13,8 @@ const toggleSidebarBtn = document.getElementById("toggleSidebarBtn");
 const typedQuestion = document.getElementById("typedQuestion");
 const explainTypedBtn = document.getElementById("explainTypedBtn");
 const clearTypedBtn = document.getElementById("clearTypedBtn");
+const typeAnswerBtn = document.getElementById("typeAnswerBtn");
+const typeInCard = document.getElementById("typeInCard");
 const speakBtn = document.getElementById("speakBtn");
 const stopSpeakBtn = document.getElementById("stopSpeakBtn");
 const resultsToolbar = document.getElementById("resultsToolbar");
@@ -416,6 +418,12 @@ fileInput.addEventListener("change", () => {
 
 takePhotoBtn.addEventListener("click", () => {
   openCamera();
+});
+
+typeAnswerBtn?.addEventListener("click", () => {
+  if (typeInCard) typeInCard.classList.remove("hidden");
+  typedQuestion?.focus();
+  window.scrollTo({ top: typeInCard?.offsetTop || 0, behavior: "smooth" });
 });
 
 closeCameraModal.addEventListener("click", closeCamera);
