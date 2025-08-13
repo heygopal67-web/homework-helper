@@ -9,6 +9,11 @@ const results = document.getElementById("results");
 const detailToggle = document.getElementById("detailToggle");
 const historyList = document.getElementById("historyList");
 const clearHistoryBtn = document.getElementById("clearHistoryBtn");
+const typedQuestion = document.getElementById("typedQuestion");
+const explainTypedBtn = document.getElementById("explainTypedBtn");
+const clearTypedBtn = document.getElementById("clearTypedBtn");
+const speakBtn = document.getElementById("speakBtn");
+const stopSpeakBtn = document.getElementById("stopSpeakBtn");
 
 // Camera modal elements
 const cameraModal = document.getElementById("cameraModal");
@@ -128,6 +133,24 @@ function renderSteps(steps) {
     card.appendChild(content);
     results.appendChild(card);
   });
+}
+
+// Text-to-Speech helpers
+let ttsUtterance = null;
+function speakText(text) {
+  try {
+    if (!("speechSynthesis" in window)) return;
+    window.speechSynthesis.cancel();
+    ttsUtterance = new SpeechSynthesisUtterance(text);
+    ttsUtterance.rate = 1.0;
+    ttsUtterance.pitch = 1.0;
+    window.speechSynthesis.speak(ttsUtterance);
+  } catch {}
+}
+function stopSpeaking() {
+  try {
+    if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+  } catch {}
 }
 
 function renderHistory() {
@@ -304,6 +327,27 @@ async function handleImageToHelp(fileOrCanvas) {
   }
 }
 
+async function handleTypedQuestion() {
+  const text = (typedQuestion?.value || "").trim();
+  if (!text) {
+    setProgress("Please type a question first.");
+    setTimeout(() => setProgress(""), 1200);
+    return;
+  }
+  try {
+    setProgress("Preparing help...");
+    const detailedMode = detailToggle.checked;
+    const aiText = await callGemini(text, detailedMode);
+    const steps = splitIntoSteps(aiText);
+    renderSteps(steps);
+    setProgress("Done!");
+    addToHistory(text, steps, detailedMode);
+  } catch (err) {
+    console.error(err);
+    setProgress("Something went wrong: " + err.message);
+  }
+}
+
 // Camera handling
 let mediaStream = null;
 
@@ -373,6 +417,18 @@ clearHistoryBtn.addEventListener("click", () => {
   saveHistory([]);
   renderHistory();
 });
+
+explainTypedBtn.addEventListener("click", handleTypedQuestion);
+clearTypedBtn.addEventListener("click", () => {
+  if (typedQuestion) typedQuestion.value = "";
+});
+speakBtn.addEventListener("click", () => {
+  const text = Array.from(document.querySelectorAll("#results .card .content"))
+    .map((el) => el.textContent)
+    .join("\n");
+  if (text) speakText(text);
+});
+stopSpeakBtn.addEventListener("click", stopSpeaking);
 
 // Init
 (function init() {
