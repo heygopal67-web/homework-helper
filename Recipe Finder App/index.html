@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Homework Helper AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700&family=Nunito:wght@400;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <div class="container header-inner">
+        <div class="brand">
+          <div class="logo" aria-hidden="true">🎒</div>
+          <h1>Homework Helper AI</h1>
+        </div>
+        <div class="controls">
+          <div
+            class="mode-toggle"
+            title="Switch between Basic and Detailed explanations"
+          >
+            <span>Basic</span>
+            <label class="switch">
+              <input type="checkbox" id="detailToggle" />
+              <span class="slider"></span>
+            </label>
+            <span>Detailed</span>
+          </div>
+          <details class="key-box">
+            <summary>API Key</summary>
+            <div class="key-inner">
+              <input
+                id="apiKeyInput"
+                type="password"
+                placeholder="Paste your OpenAI API key"
+                autocomplete="off"
+              />
+              <button id="saveKeyBtn" class="btn small">Save</button>
+              <span id="keyStatus" class="muted"></span>
+            </div>
+          </details>
+        </div>
+      </div>
+    </header>
+
+    <main class="container main">
+      <section class="actions">
+        <button id="takePhotoBtn" class="btn primary big">📸 Take Photo</button>
+        <button id="uploadPhotoBtn" class="btn secondary big">
+          ⬆️ Upload Photo
+        </button>
+        <input id="fileInput" type="file" accept="image/*" hidden />
+      </section>
+
+      <section id="progressArea" class="progress" aria-live="polite"></section>
+
+      <section id="results" class="results" aria-live="polite"></section>
+
+      <section class="history">
+        <div class="history-header">
+          <h2>History</h2>
+          <button id="clearHistoryBtn" class="btn ghost small">Clear</button>
+        </div>
+        <div id="historyList" class="history-list"></div>
+      </section>
+    </main>
+
+    <!-- Webcam Modal -->
+    <div id="cameraModal" class="modal" aria-hidden="true">
+      <div class="modal-backdrop" id="closeCameraModal"></div>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Take a Photo</h3>
+          <button class="icon-btn" id="xCameraModal" aria-label="Close">
+            ✖
+          </button>
+        </div>
+        <div class="camera-area">
+          <video id="cameraVideo" autoplay playsinline></video>
+          <canvas id="cameraCanvas" style="display: none"></canvas>
+        </div>
+        <div class="modal-actions">
+          <button id="captureBtn" class="btn primary">Capture</button>
+        </div>
+      </div>
+    </div>
+
+    <footer class="footer container">
+      <p class="muted">
+        Made for kids 8–14. Uses on-device OCR (Tesseract.js) and OpenAI for
+        guidance.
+      </p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
