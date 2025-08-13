@@ -178,6 +178,46 @@ function stopSpeaking() {
   } catch {}
 }
 
+// Read-aloud with per-step highlighting
+function speakStepsWithHighlight() {
+  if (!("speechSynthesis" in window)) return;
+  const stepCards = Array.from(document.querySelectorAll("#results .card"));
+  const stepTexts = stepCards
+    .map((c) => c.querySelector(".content")?.textContent?.trim() || "")
+    .filter(Boolean);
+  if (!stepTexts.length) return;
+
+  // Clear any previous
+  window.speechSynthesis.cancel();
+  stepCards.forEach((card) => card.classList.remove("reading"));
+
+  let index = 0;
+  const speakNext = () => {
+    if (index >= stepTexts.length) {
+      return;
+    }
+    const card = stepCards[index];
+    const utter = new SpeechSynthesisUtterance(stepTexts[index]);
+    utter.rate = 1.0;
+    utter.pitch = 1.0;
+    utter.onstart = () => {
+      card.classList.add("reading");
+    };
+    utter.onend = () => {
+      card.classList.remove("reading");
+      index += 1;
+      speakNext();
+    };
+    utter.onerror = () => {
+      card.classList.remove("reading");
+      index += 1;
+      speakNext();
+    };
+    window.speechSynthesis.speak(utter);
+  };
+  speakNext();
+}
+
 function renderHistory() {
   const items = loadHistory();
   historyList.innerHTML = "";
@@ -461,10 +501,7 @@ clearTypedBtn.addEventListener("click", () => {
   if (typedQuestion) typedQuestion.value = "";
 });
 speakBtn.addEventListener("click", () => {
-  const text = Array.from(document.querySelectorAll("#results .card .content"))
-    .map((el) => el.textContent)
-    .join("\n");
-  if (text) speakText(text);
+  speakStepsWithHighlight();
 });
 stopSpeakBtn.addEventListener("click", stopSpeaking);
 
