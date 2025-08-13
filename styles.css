@@ -54,9 +54,9 @@ input:checked + .slider { background: var(--primary); }
 input:checked + .slider:before { transform: translateX(24px); }
 
 .main { padding: 20px 0 32px; }
-.layout { display: grid; grid-template-columns: 1fr; gap: 16px; align-items: start; }
-.content { min-width: 0; }
-.sidebar { background: #ffffff; border: 2px solid #e5e7eb; border-radius: 16px; padding: 12px; height: max-content; position: sticky; top: 12px; }
+.layout { display: grid; grid-template-columns: 1fr; grid-template-areas: 'content' 'sidebar'; gap: 16px; align-items: start; }
+.content { min-width: 0; grid-area: content; }
+.sidebar { background: #ffffff; border: 2px solid #e5e7eb; border-radius: 16px; padding: 12px; height: max-content; position: sticky; top: 12px; grid-area: sidebar; }
 .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px; }
 
 .btn { border: none; border-radius: 16px; padding: 12px 16px; font-weight: 800; cursor: pointer; box-shadow: var(--shadow); transition: transform .05s ease, background .2s ease; }
@@ -100,7 +100,7 @@ input:checked + .slider:before { transform: translateX(24px); }
 .modal-actions { display: flex; justify-content: flex-end; gap: 8px; padding: 12px 16px; border-top: 1px solid #e5e7eb; }
 
 @media (min-width: 960px) {
-  .layout { grid-template-columns: 1fr 320px; }
+  .layout { grid-template-columns: 320px 1fr; grid-template-areas: 'sidebar content'; }
 }
 
 @media (max-width: 640px) {
