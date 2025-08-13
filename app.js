@@ -119,6 +119,9 @@ function hideRetryButton() {
 function getFriendlyErrorMessage(err, context) {
   const raw = (err && (err.userMessage || err.message || String(err))) || "";
   const msg = raw.toLowerCase();
+  if (/(^|\s)(500|502|503|504)(\s|$)/.test(raw)) {
+    return "The AI service is temporarily unavailable. Please try again in a moment.";
+  }
   if (msg.includes("network") || msg.includes("failed to fetch")) {
     return "Network issue. Check your connection and try again.";
   }
@@ -143,6 +146,40 @@ function getFriendlyErrorMessage(err, context) {
     return "We couldn't read the text from the image. Try a clearer photo.";
   }
   return "Something went wrong. Please try again.";
+}
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function fetchWithRetry(url, options, retries = 2, baseDelayMs = 600) {
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const res = await fetch(url, options);
+      if (!res.ok) {
+        const status = res.status;
+        if ((status >= 500 && status < 600) || status === 429) {
+          if (attempt < retries) {
+            await sleep(baseDelayMs * Math.pow(2, attempt));
+            continue;
+          }
+        }
+      }
+      return res;
+    } catch (err) {
+      const msg = String((err && err.message) || err).toLowerCase();
+      if (
+        (msg.includes("network") ||
+          msg.includes("failed to fetch") ||
+          msg.includes("timeout")) &&
+        attempt < retries
+      ) {
+        await sleep(baseDelayMs * Math.pow(2, attempt));
+        continue;
+      }
+      throw err;
+    }
+  }
 }
 
 function setProgress(message, state) {
@@ -515,11 +552,16 @@ async function callGemini(questionText, detailedMode) {
 
   let response;
   try {
-    response = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
+    response = await fetchWithRetry(
+      url,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      },
+      2,
+      600
+    );
   } catch (err) {
     throw new Error(getFriendlyErrorMessage(err, "ai"));
   }
