@@ -43,12 +43,16 @@
             <span>Detailed</span>
           </div>
           <button
-            id="toggleSidebarBtn"
+            id="themeToggleBtn"
             class="btn ghost small fab"
-            title="Show or hide history"
+            title="Toggle light/dark theme"
           >
-            <i class="fa-solid fa-bars-staggered icon" aria-hidden="true"></i
-            ><span class="label">History</span>
+            <i
+              class="fa-solid fa-moon icon"
+              id="themeIcon"
+              aria-hidden="true"
+            ></i>
+            <span class="label">Theme</span>
           </button>
           <label for="fontPicker" class="sr-only">Font</label>
           <select id="fontPicker" class="font-select" title="Change font">
@@ -59,7 +63,7 @@
             <option value="font-shantell">Shantell Sans</option>
             <option value="font-inter">Inter</option>
           </select>
-          <button
+           <button
             id="sketchToggleBtn"
             class="btn ghost small fab"
             title="Sketch / Highlight on screen"
@@ -79,6 +83,15 @@
             ></i>
             <span id="bgmLabel" class="label">Music</span>
           </button>
+          <button
+            id="toggleSidebarBtn"
+            class="btn ghost small fab"
+            title="Show or hide history"
+          >
+            <i class="fa-solid fa-bars-staggered icon" aria-hidden="true"></i
+            ><span class="label">History</span>
+          </button>
+         
         </div>
       </div>
     </header>
@@ -177,12 +190,7 @@
     </div>
 
     <!-- Background music (will play only after user interaction) -->
-    <audio
-      id="bgmAudio"
-      src="bgm.mp3"
-      preload="none"
-      loop
-    ></audio>
+    <audio id="bgmAudio" src="bgm.mp3" preload="none" loop></audio>
 
     <!-- Webcam Modal -->
     <div id="cameraModal" class="modal" aria-hidden="true">

@@ -28,6 +28,8 @@ const bgmToggleBtn = document.getElementById("bgmToggleBtn");
 const bgmAudio = document.getElementById("bgmAudio");
 const bgmIcon = document.getElementById("bgmIcon");
 const bgmLabel = document.getElementById("bgmLabel");
+const themeToggleBtn = document.getElementById("themeToggleBtn");
+const themeIcon = document.getElementById("themeIcon");
 
 // Camera modal elements
 const cameraModal = document.getElementById("cameraModal");
@@ -609,6 +611,26 @@ function setBgmEnabled(enabled) {
 bgmToggleBtn?.addEventListener("click", () => {
   const current = localStorage.getItem(BGM_KEY) === "1";
   setBgmEnabled(!current);
+});
+
+// Theme toggle (persisted)
+const THEME_KEY = "hhai_theme_dark";
+function applyThemeFromStorage() {
+  const isDark = localStorage.getItem(THEME_KEY) === "1";
+  document.documentElement.classList.toggle("dark", isDark);
+  if (themeIcon) {
+    themeIcon.classList.toggle("fa-moon", !isDark);
+    themeIcon.classList.toggle("fa-sun", isDark);
+  }
+}
+applyThemeFromStorage();
+
+themeToggleBtn?.addEventListener("click", () => {
+  const isDark = !(localStorage.getItem(THEME_KEY) === "1");
+  try {
+    localStorage.setItem(THEME_KEY, isDark ? "1" : "0");
+  } catch {}
+  applyThemeFromStorage();
 });
 
 // Sketch overlay logic
