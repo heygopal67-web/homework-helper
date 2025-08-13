@@ -146,6 +146,7 @@ input:checked + .slider:before { transform: translateX(24px); }
 /* Floating controls: History and Sketch at bottom-left */
 #toggleSidebarBtn { position: fixed; left: 16px; bottom: 26px; z-index: 60; box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
 #sketchToggleBtn { position: fixed; left: 16px; bottom: 72px; z-index: 60; box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
+#bgmToggleBtn { position: fixed; left: 16px; bottom: 118px; z-index: 60; box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
 
 @media (min-width: 960px) {
   .layout { grid-template-columns: 320px 1fr; grid-template-areas: 'sidebar content'; }

@@ -53,7 +53,7 @@
           <label for="fontPicker" class="sr-only">Font</label>
           <select id="fontPicker" class="font-select" title="Change font">
             <option value="font-patrick">Patrick Hand (default)</option>
-            <option value="font-kalam">Kalam </option>
+            <option value="font-kalam">Kalam</option>
             <option value="font-caveat">Caveat</option>
             <option value="font-gochi">Gochi Hand</option>
             <option value="font-shantell">Shantell Sans</option>
@@ -66,6 +66,18 @@
           >
             <i class="fa-solid fa-pencil icon" aria-hidden="true"></i
             ><span>Sketch</span>
+          </button>
+          <button
+            id="bgmToggleBtn"
+            class="btn ghost small"
+            title="Background music mute/unmute"
+          >
+            <i
+              class="fa-solid fa-music icon"
+              id="bgmIcon"
+              aria-hidden="true"
+            ></i>
+            <span id="bgmLabel">Music</span>
           </button>
         </div>
       </div>
@@ -163,6 +175,14 @@
         </button>
       </div>
     </div>
+
+    <!-- Background music (will play only after user interaction) -->
+    <audio
+      id="bgmAudio"
+      src="walking-dreaming-chill-lofi-6.mp3"
+      preload="none"
+      loop
+    ></audio>
 
     <!-- Webcam Modal -->
     <div id="cameraModal" class="modal" aria-hidden="true">

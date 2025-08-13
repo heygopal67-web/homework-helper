@@ -24,6 +24,10 @@ const sketchCanvas = document.getElementById("sketchCanvas");
 const sketchClearBtn = document.getElementById("sketchClearBtn");
 const sketchCloseBtn = document.getElementById("sketchCloseBtn");
 const fontPicker = document.getElementById("fontPicker");
+const bgmToggleBtn = document.getElementById("bgmToggleBtn");
+const bgmAudio = document.getElementById("bgmAudio");
+const bgmIcon = document.getElementById("bgmIcon");
+const bgmLabel = document.getElementById("bgmLabel");
 
 // Camera modal elements
 const cameraModal = document.getElementById("cameraModal");
@@ -533,6 +537,15 @@ window.addEventListener("DOMContentLoaded", () => {
   if (!layout || !sidebar) return;
   sidebar.classList.toggle("hidden", hidden);
   layout.classList.toggle("sidebar-hidden", hidden);
+  // Init BGM icon/label from saved state (no autoplay)
+  const bgmEnabled = localStorage.getItem("hhai_bgm_enabled") === "1";
+  if (bgmEnabled) {
+    bgmIcon?.classList.add("fa-music");
+    bgmLabel && (bgmLabel.textContent = "Music");
+  } else {
+    bgmIcon?.classList.add("fa-volume-xmark");
+    bgmLabel && (bgmLabel.textContent = "Music");
+  }
 });
 
 // Font switcher
@@ -571,6 +584,32 @@ fontPicker?.addEventListener("change", () => {
     if (fontPicker) fontPicker.value = saved;
   } catch {}
 })();
+
+// Background music controls
+const BGM_KEY = "hhai_bgm_enabled";
+function setBgmEnabled(enabled) {
+  try {
+    localStorage.setItem(BGM_KEY, enabled ? "1" : "0");
+  } catch {}
+  if (!bgmAudio) return;
+  if (enabled) {
+    bgmAudio.volume = 0.35;
+    bgmAudio.play().catch(() => {});
+    bgmIcon?.classList.remove("fa-volume-xmark");
+    bgmIcon?.classList.add("fa-music");
+    bgmLabel && (bgmLabel.textContent = "Music On");
+  } else {
+    bgmAudio.pause();
+    bgmIcon?.classList.remove("fa-music");
+    bgmIcon?.classList.add("fa-volume-xmark");
+    bgmLabel && (bgmLabel.textContent = "Music Off");
+  }
+}
+
+bgmToggleBtn?.addEventListener("click", () => {
+  const current = localStorage.getItem(BGM_KEY) === "1";
+  setBgmEnabled(!current);
+});
 
 // Sketch overlay logic
 let sketchCtx = null;
