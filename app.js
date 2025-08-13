@@ -18,9 +18,10 @@ const closeCameraModal = document.getElementById("closeCameraModal");
 const xCameraModal = document.getElementById("xCameraModal");
 const captureBtn = document.getElementById("captureBtn");
 
+// WARNING: Embedding API keys in client code is not secure. You asked to use JS only.
+const GEMINI_API_KEY = "AIzaSyAOqqVRGcnRuz_qVAV0pq_Y6gbhK-9h2wQ";
+
 const STORAGE_KEYS = {
-  apiKey: "AIzaSyAOqqVRGcnRuz_qVAV0pq_Y6gbhK-9h2wQ",
-  legacyOpenAIKey: "hhai_openai_key",
   history: "hhai_history_v1",
   mode: "hhai_mode_detailed",
 };
@@ -29,22 +30,7 @@ function setProgress(message) {
   progressArea.textContent = message || "";
 }
 
-function readStoredKey() {
-  try {
-    const gemini = localStorage.getItem(STORAGE_KEYS.apiKey);
-    if (gemini) return gemini;
-    const legacy = localStorage.getItem(STORAGE_KEYS.legacyOpenAIKey);
-    return legacy || "";
-  } catch {
-    return "";
-  }
-}
-
-function saveStoredKey(key) {
-  try {
-    localStorage.setItem(STORAGE_KEYS.apiKey, key);
-  } catch {}
-}
+// No key storage; key is embedded above per request
 
 function getModeDetailed() {
   try {
@@ -60,9 +46,8 @@ function setModeDetailed(val) {
   } catch {}
 }
 
-// Backend-managed key, no prompt needed
 async function getApiKeyInteractive() {
-  return "server-managed";
+  return GEMINI_API_KEY;
 }
 
 function loadHistory() {
@@ -221,12 +206,33 @@ function buildSystemPrompt(questionText) {
   );
 }
 
-async function callGemini(questionText, detailedMode, apiKeyIgnored) {
+async function callGemini(questionText, detailedMode) {
   setProgress("Asking AI for guidance...");
-  const response = await fetch("/api/gemini", {
+  const systemPrompt = buildSystemPrompt(questionText);
+  const detailInstruction = detailedMode
+    ? " Provide a thorough explanation with about 6–9 steps, include a tiny example and a quick tip where helpful."
+    : " Keep it concise with about 3–5 simple steps.";
+  const userPrompt =
+    "Mode: " + (detailedMode ? "Detailed" : "Basic") + ". " + detailInstruction;
+
+  const url =
+    "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=" +
+    encodeURIComponent(GEMINI_API_KEY);
+
+  const body = {
+    contents: [
+      {
+        role: "user",
+        parts: [{ text: systemPrompt + "\n\n" + userPrompt }],
+      },
+    ],
+    generationConfig: { temperature: detailedMode ? 0.6 : 0.4 },
+  };
+
+  const response = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ questionText, detailedMode }),
+    body: JSON.stringify(body),
   });
 
   if (!response.ok) {
@@ -234,7 +240,12 @@ async function callGemini(questionText, detailedMode, apiKeyIgnored) {
     throw new Error("Gemini error: " + response.status + " " + errText);
   }
   const data = await response.json();
-  return data && data.text ? String(data.text) : "";
+  const parts = data?.candidates?.[0]?.content?.parts || [];
+  const text = parts
+    .map((p) => p.text || "")
+    .join("\n")
+    .trim();
+  return text;
 }
 
 function splitIntoSteps(text) {
