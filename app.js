@@ -537,7 +537,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
 // Font switcher
 fontPicker?.addEventListener("change", () => {
-  const val = fontPicker.value || "font-kalam";
+  const val = fontPicker.value || "font-patrick";
   const htmlEl = document.documentElement;
   htmlEl.classList.remove(
     "font-kalam",
