@@ -91,6 +91,7 @@ input:checked + .slider:before { transform: translateX(24px); }
   background: var(--card); border-radius: 14px; padding: 16px; box-shadow: var(--shadow); border: 1px solid #e5e7eb; transition: box-shadow .2s ease, transform .05s ease;
 }
 .card:hover { box-shadow: 0 10px 24px rgba(2,6,23,0.08); }
+.card.reading { border-color: #ef4444; box-shadow: 0 0 0 3px rgba(239,68,68,0.15); }
 .card .step-index { font-weight: 800; color: #334155; background: #fde8e8; padding: 6px 10px; border-radius: 999px; display: inline-block; margin-bottom: 8px; border: 1px solid #fbd5d5; }
 .card .content { font-size: 18px; line-height: 1.45; }
 .highlight { background: #ffe4e6; padding: 0 6px; border-radius: 6px; }
