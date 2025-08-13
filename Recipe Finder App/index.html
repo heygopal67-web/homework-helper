@@ -26,7 +26,11 @@
           >
             <span>Basic</span>
             <label class="switch">
-              <input type="checkbox" id="detailToggle" />
+              <input
+                type="checkbox"
+                id="detailToggle"
+                aria-label="Toggle detailed mode"
+              />
               <span class="slider"></span>
             </label>
             <span>Detailed</span>
@@ -34,11 +38,13 @@
           <details class="key-box">
             <summary>API Key</summary>
             <div class="key-inner">
+              <label for="apiKeyInput" class="sr-only">OpenAI API key</label>
               <input
                 id="apiKeyInput"
                 type="password"
                 placeholder="Paste your OpenAI API key"
                 autocomplete="off"
+                aria-label="OpenAI API key"
               />
               <button id="saveKeyBtn" class="btn small">Save</button>
               <span id="keyStatus" class="muted"></span>
@@ -82,7 +88,7 @@
         </div>
         <div class="camera-area">
           <video id="cameraVideo" autoplay playsinline></video>
-          <canvas id="cameraCanvas" style="display: none"></canvas>
+          <canvas id="cameraCanvas"></canvas>
         </div>
         <div class="modal-actions">
           <button id="captureBtn" class="btn primary">Capture</button>
