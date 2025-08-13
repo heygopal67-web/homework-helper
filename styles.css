@@ -16,7 +16,7 @@ html, body { height: 100%; }
 html { font-family: 'Kalam', cursive; }
 body {
   margin: 0;
-  font-family: 'Kalam', cursive;
+  font-family: inherit;
   color: var(--ink);
   background: var(--bg);
 }
@@ -42,7 +42,7 @@ button, input, textarea, select, label { font-family: inherit; }
 .brand .logo { font-size: 24px; color: var(--primary); }
 .logo-img { height: 40px; width: auto; border-radius: 8px; display: block; }
 .brand h1 {
-  font-family: 'Kalam', cursive;
+  font-family: inherit;
   font-weight: 600; margin: 0; font-size: 26px;
   color: #1f2937;
 }
