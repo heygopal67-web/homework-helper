@@ -51,7 +51,6 @@ const closeCameraModal = document.getElementById("closeCameraModal");
 const xCameraModal = document.getElementById("xCameraModal");
 const captureBtn = document.getElementById("captureBtn");
 
-// WARNING: Embedding API keys in client code is not secure. You asked to use JS only.
 const GEMINI_API_KEY = "AIzaSyDLtC9Kx-RO7OqLlUSdYhWBPPQ6zByc3Hs";
 
 const STORAGE_KEYS = {
@@ -60,6 +59,91 @@ const STORAGE_KEYS = {
   sidebarHidden: "hhai_sidebar_hidden",
   fontClass: "hhai_font_class",
 };
+
+// Keep track of the last AI request so we can offer a Retry button on errors
+let lastAiRequest = null; // { questionText: string, detailedMode: boolean }
+
+function getOrCreateRetryButton() {
+  try {
+    let btn = document.getElementById("retryBtn");
+    if (btn) return btn;
+    btn = document.createElement("button");
+    btn.id = "retryBtn";
+    btn.className = "btn secondary small";
+    btn.textContent = "Retry";
+    btn.style.display = "none";
+    btn.style.marginTop = "8px";
+    if (progressArea && progressArea.parentElement) {
+      progressArea.insertAdjacentElement("afterend", btn);
+    } else {
+      document.body.appendChild(btn);
+    }
+    btn.addEventListener("click", async () => {
+      if (!lastAiRequest) return;
+      btn.disabled = true;
+      try {
+        setProgress("Retrying...");
+        const { questionText, detailedMode } = lastAiRequest;
+        const aiText = await callGemini(questionText, detailedMode);
+        const steps = splitIntoSteps(aiText);
+        renderSteps(steps);
+        setProgress("Done!", "done");
+        if (resultsToolbar)
+          resultsToolbar.classList.toggle("hidden", steps.length === 0);
+        addToHistory(questionText, steps, detailedMode);
+        hideRetryButton();
+      } catch (err) {
+        console.error(err);
+        setProgress(getFriendlyErrorMessage(err, "ai"));
+        showRetryButton();
+      } finally {
+        btn.disabled = false;
+      }
+    });
+    return btn;
+  } catch {
+    return null;
+  }
+}
+
+function showRetryButton() {
+  const btn = getOrCreateRetryButton();
+  if (btn) btn.style.display = "inline-block";
+}
+
+function hideRetryButton() {
+  const btn = document.getElementById("retryBtn");
+  if (btn) btn.style.display = "none";
+}
+
+function getFriendlyErrorMessage(err, context) {
+  const raw = (err && (err.userMessage || err.message || String(err))) || "";
+  const msg = raw.toLowerCase();
+  if (msg.includes("network") || msg.includes("failed to fetch")) {
+    return "Network issue. Check your connection and try again.";
+  }
+  if (msg.includes("timeout")) {
+    return "The request took too long. Please try again.";
+  }
+  if (msg.includes("429") || msg.includes("rate") || msg.includes("quota")) {
+    return "The service is a bit busy right now. Please try again shortly.";
+  }
+  if (
+    msg.includes("403") ||
+    msg.includes("401") ||
+    msg.includes("api key") ||
+    msg.includes("permission")
+  ) {
+    return "The AI service isn't available for this request. Please try again later.";
+  }
+  if (context === "camera") {
+    return "We couldn't access the camera. Please check permissions and try again.";
+  }
+  if (context === "ocr") {
+    return "We couldn't read the text from the image. Try a clearer photo.";
+  }
+  return "Something went wrong. Please try again.";
+}
 
 function setProgress(message, state) {
   if (!progressArea) return;
@@ -345,17 +429,22 @@ async function ocrImageFromFile(file) {
   const reader = new FileReader();
   const dataUrl = await new Promise((resolve, reject) => {
     reader.onload = () => resolve(reader.result);
-    reader.onerror = reject;
+    reader.onerror = (e) => reject(new Error("Could not read the image file."));
     reader.readAsDataURL(file);
   });
   setProgress("Recognizing text (OCR) ... this can take a few seconds");
-  const { data } = await Tesseract.recognize(dataUrl, "eng", {
-    logger: (m) => {
-      if (m.status === "recognizing text") {
-        setProgress(`OCR: ${(m.progress * 100).toFixed(0)}%`);
-      }
-    },
-  });
+  let data;
+  try {
+    ({ data } = await Tesseract.recognize(dataUrl, "eng", {
+      logger: (m) => {
+        if (m.status === "recognizing text") {
+          setProgress(`OCR: ${(m.progress * 100).toFixed(0)}%`);
+        }
+      },
+    }));
+  } catch (err) {
+    throw new Error(getFriendlyErrorMessage(err, "ocr"));
+  }
   const text = (data && data.text ? data.text : "").trim();
   return text;
 }
@@ -363,22 +452,37 @@ async function ocrImageFromFile(file) {
 async function ocrImageFromCanvas(canvas) {
   setProgress("Recognizing text (OCR) from camera...");
   const dataUrl = canvas.toDataURL("image/png");
-  const { data } = await Tesseract.recognize(dataUrl, "eng", {
-    logger: (m) => {
-      if (m.status === "recognizing text") {
-        setProgress(`OCR: ${(m.progress * 100).toFixed(0)}%`);
-      }
-    },
-  });
+  let data;
+  try {
+    ({ data } = await Tesseract.recognize(dataUrl, "eng", {
+      logger: (m) => {
+        if (m.status === "recognizing text") {
+          setProgress(`OCR: ${(m.progress * 100).toFixed(0)}%`);
+        }
+      },
+    }));
+  } catch (err) {
+    throw new Error(getFriendlyErrorMessage(err, "ocr"));
+  }
   const text = (data && data.text ? data.text : "").trim();
   return text;
 }
 
 function buildSystemPrompt(questionText) {
   return (
-    "You are a helpful homework tutor for kids aged 8–14. The input is a question: '" +
+    "You are a friendly, patient homework tutor for kids aged 8–18." +
+    " Your goal is to help them understand and solve problems on their own." +
+    " The input question is: '" +
     questionText.replace(/\s+/g, " ").trim() +
-    "'. Explain step-by-step how to solve it, using simple language, examples, and tips. Do not give the final answer directly — instead, guide them to find it themselves."
+    "'." +
+    " Always break the solution into clear, numbered steps." +
+    " Use very simple words and short sentences." +
+    " Include a small, related example that is easier than the main problem." +
+    " Give hints, not the final answer." +
+    " If the question is hard (like algebra, fractions, geometry, or multi-step word problems)," +
+    " start by explaining the main idea and then guide them through the method step-by-step." +
+    " For math, show the formulas and explain each term in kid-friendly language." +
+    " Encourage them at the end to try the last step themselves."
   );
 }
 
@@ -386,8 +490,9 @@ async function callGemini(questionText, detailedMode) {
   setProgress("Asking AI for guidance...");
   const systemPrompt = buildSystemPrompt(questionText);
   const detailInstruction = detailedMode
-    ? " Provide a thorough explanation with about 6–9 steps, include a tiny example and a quick tip where helpful."
-    : " Keep it concise with about 3–5 simple steps.";
+    ? " Give a detailed walkthrough in 6–9 clear steps, with a short example and a quick tip. Keep sentences short and easy to read."
+    : " Give a short walkthrough in 3–5 steps, keeping explanations simple and clear.";
+
   const userPrompt =
     "Mode: " + (detailedMode ? "Detailed" : "Basic") + ". " + detailInstruction;
 
@@ -402,18 +507,31 @@ async function callGemini(questionText, detailedMode) {
         parts: [{ text: systemPrompt + "\n\n" + userPrompt }],
       },
     ],
-    generationConfig: { temperature: detailedMode ? 0.6 : 0.4 },
+    generationConfig: {
+      temperature: detailedMode ? 0.55 : 0.4,
+      maxOutputTokens: 500,
+    },
   };
 
-  const response = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
+  let response;
+  try {
+    response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+  } catch (err) {
+    throw new Error(getFriendlyErrorMessage(err, "ai"));
+  }
 
   if (!response.ok) {
     const errText = await response.text().catch(() => "");
-    throw new Error("Gemini error: " + response.status + " " + errText);
+    throw new Error(
+      getFriendlyErrorMessage(
+        new Error("" + response.status + " " + errText),
+        "ai"
+      )
+    );
   }
   const data = await response.json();
   const parts = data?.candidates?.[0]?.content?.parts || [];
@@ -440,17 +558,18 @@ function splitIntoSteps(text) {
 
 async function handleImageToHelp(fileOrCanvas) {
   try {
+    hideRetryButton();
     setProgress("Starting...");
     clearResults();
     const isCanvas =
       typeof HTMLCanvasElement !== "undefined" &&
       fileOrCanvas instanceof HTMLCanvasElement;
-    const text = isCanvas
+    let text = isCanvas
       ? await ocrImageFromCanvas(fileOrCanvas)
       : await ocrImageFromFile(fileOrCanvas);
 
     if (!text) {
-      setProgress("No text found. Try a clearer photo.");
+      setProgress("We couldn't find text in the image. Try a clearer photo.");
       return;
     }
     setProgress("Question detected. Preparing help...");
@@ -458,7 +577,9 @@ async function handleImageToHelp(fileOrCanvas) {
 
     const apiKey = await getApiKeyInteractive();
     if (!apiKey) {
-      setProgress("OpenAI API key is required to ask the AI.");
+      setProgress(
+        "The AI service isn't available right now. Please try again later."
+      );
       return;
     }
 
@@ -470,7 +591,16 @@ async function handleImageToHelp(fileOrCanvas) {
     addToHistory(text, steps, detailedMode);
   } catch (err) {
     console.error(err);
-    setProgress("Something went wrong: " + err.message);
+    setProgress(getFriendlyErrorMessage(err));
+    try {
+      if (typeof text === "string" && text.trim()) {
+        lastAiRequest = {
+          questionText: text.trim(),
+          detailedMode: detailToggle.checked,
+        };
+        showRetryButton();
+      }
+    } catch {}
   }
 }
 
@@ -482,6 +612,7 @@ async function handleTypedQuestion() {
     return;
   }
   try {
+    hideRetryButton();
     setProgress("Preparing help...");
     const detailedMode = detailToggle.checked;
     const aiText = await callGemini(text, detailedMode);
@@ -493,7 +624,9 @@ async function handleTypedQuestion() {
     addToHistory(text, steps, detailedMode);
   } catch (err) {
     console.error(err);
-    setProgress("Oops! Something went wrong. Please try again.");
+    setProgress(getFriendlyErrorMessage(err, "ai"));
+    lastAiRequest = { questionText: text, detailedMode: detailToggle.checked };
+    showRetryButton();
   }
 }
 
@@ -509,7 +642,7 @@ async function openCamera() {
     });
     cameraVideo.srcObject = mediaStream;
   } catch (err) {
-    setProgress("Could not access camera: " + err.message);
+    setProgress(getFriendlyErrorMessage(err, "camera"));
     closeCamera();
   }
 }
@@ -607,6 +740,7 @@ closeResultsBtn?.addEventListener("click", () => {
   setProgress("");
   if (resultsToolbar) resultsToolbar.classList.add("hidden");
   clearImagePreview();
+  hideRetryButton();
 });
 
 // Init
