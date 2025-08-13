@@ -240,6 +240,9 @@ function renderHistory() {
   items.forEach((item) => {
     const el = document.createElement("div");
     el.className = "history-item";
+    // Title + View button row
+    const head = document.createElement("div");
+    head.className = "history-head";
     const h4 = document.createElement("h4");
     h4.textContent =
       item.questionText.slice(0, 120) +
@@ -259,9 +262,10 @@ function renderHistory() {
       window.scrollTo({ top: 0, behavior: "smooth" });
     });
 
-    el.appendChild(h4);
+    head.appendChild(h4);
+    head.appendChild(viewBtn);
+    el.appendChild(head);
     el.appendChild(meta);
-    el.appendChild(viewBtn);
     historyList.appendChild(el);
   });
 }
@@ -621,6 +625,13 @@ function applyThemeFromStorage() {
   if (themeIcon) {
     themeIcon.classList.toggle("fa-moon", !isDark);
     themeIcon.classList.toggle("fa-sun", isDark);
+  }
+  // Update theme toggle label to reflect current theme
+  const themeLabelEl = themeToggleBtn
+    ? themeToggleBtn.querySelector(".label")
+    : null;
+  if (themeLabelEl) {
+    themeLabelEl.textContent = isDark ? "Dark" : "Light";
   }
 }
 applyThemeFromStorage();

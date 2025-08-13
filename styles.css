@@ -98,11 +98,14 @@ h1, h2, h3, h4, h5, h6 { color: var(--ink); }
 }
 .key-inner input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px var(--ring); }
 
-.switch { position: relative; display: inline-block; width: 54px; height: 30px; }
+.switch { position: relative; display: inline-block; width: 46px; height: 25px; }
 .switch input { display:none; }
 .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: #e5e7eb; transition: .3s; border-radius: 999px; }
-.slider:before { position: absolute; content: ""; height: 22px; width: 22px; left: 4px; bottom: 4px; background: white; transition: .3s; border-radius: 50%; box-shadow: var(--shadow); }
+.slider:before { position: absolute; content: ""; height: 18px; width: 18px; right:2px; left: 2px; bottom: 4px; background: white; transition: .3s; border-radius: 50%; box-shadow: var(--shadow); }
 input:checked + .slider { background: var(--primary); }
+/* Dark mode: clearer toggle track colors */
+.dark .slider { background: #334155; }
+.dark input:checked + .slider { background: #ffffff; }
 input:checked + .slider:before { transform: translateX(24px); }
 
 .main { padding: 20px 0 32px; }
@@ -117,6 +120,9 @@ input:checked + .slider:before { transform: translateX(24px); }
 .btn:active { transform: translateY(1px); }
 .btn.primary { background: var(--primary); color: white; border-color: transparent; }
 .btn.primary:hover { background: var(--primary-700); }
+/* Dark mode: brighter primary for visibility (e.g., Take Photo) */
+.dark .btn.primary { background: #ffffff; border-color: transparent; color: #1f2937; }
+.dark .btn.primary:hover { background: #ffffff; }
 .btn.secondary { background: var(--secondary); color: var(--ink); border-color: #d1d5db; }
 .dark .btn.secondary { border-color: #334155; }
 .btn.secondary:hover { background: var(--secondary-700); }
@@ -151,6 +157,8 @@ input:checked + .slider:before { transform: translateX(24px); }
 .card .step-index { font-weight: 800; color: #334155; background: #fde8e8; padding: 6px 10px; border-radius: 999px; display: inline-block; margin-bottom: 8px; border: 1px solid #fbd5d5; }
 .card .content { font-size: 18px; line-height: 1.45; }
 .highlight { background: #ffe4e6; padding: 0 6px; border-radius: 6px; }
+/* Improve contrast for highlight in dark theme: use darker text on light rose */
+.dark .highlight { background: #f9a8d4; color: #111827; }
 
 .type-in { margin-top: 12px; }
 .type-in textarea { width: 100%; resize: vertical; padding: 12px; border-radius: 12px; border: 2px solid #e5e7eb; outline: none; font-size: 16px; }
@@ -167,8 +175,12 @@ input:checked + .slider:before { transform: translateX(24px); }
 .dark .history-header { background: var(--card); }
 .history-list { display: grid; gap: 10px; margin-top: 8px; max-height: 60vh; overflow: auto; }
 .history-item { background: #ffffff; border-radius: 14px; padding: 12px; border: 2px solid #e5e7eb; }
-.history-item h4 { margin: 0 0 8px; font-size: 16px; }
+.history-item .history-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.history-item h4 { margin: 0 0 8px; font-size: 16px; font-weight: 700; }
 .history-item .mini { color: var(--muted); font-size: 14px; }
+/* Ensure history cards are dark-themed and text stays readable */
+.dark .history-item { background: var(--card); border-color: #334155; }
+.dark .history-item h4 { color: var(--ink); }
 
 .footer { padding: 12px 0 36px; color: var(--muted); font-size: 14px; }
 .muted { color: var(--muted); }
@@ -195,7 +207,9 @@ input:checked + .slider:before { transform: translateX(24px); }
 /* Floating controls: History and Sketch at bottom-left */
 #toggleSidebarBtn { position: fixed; left: 16px; bottom: 26px; z-index: 60; box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
 #sketchToggleBtn { position: fixed; left: 16px; bottom: 72px; z-index: 60; box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
-#bgmToggleBtn { position: fixed; left: 16px; bottom: 118px; z-index: 60; box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
+/* Order: History (26px), Sketch (72px), Theme (118px), Music (164px) */
+#themeToggleBtn { position: fixed; left: 16px; bottom: 118px; z-index: 60; box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
+#bgmToggleBtn { position: fixed; left: 16px; bottom: 164px; z-index: 60; box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
 
 /* FAB label reveal on hover */
 .fab { display: inline-flex; align-items: center; gap: 0; padding: 10px; overflow: hidden; white-space: nowrap; }
@@ -230,5 +244,3 @@ input:checked + .slider:before { transform: translateX(24px); }
 }
 
 #cameraCanvas { display: none; }
-
-
