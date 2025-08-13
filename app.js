@@ -454,7 +454,7 @@ async function handleTypedQuestion() {
     addToHistory(text, steps, detailedMode);
   } catch (err) {
     console.error(err);
-    setProgress("Something went wrong: " + err.message);
+    setProgress("Oops! Something went wrong. Please try again.");
   }
 }
 
@@ -712,7 +712,7 @@ function initCustomFontPicker() {
     wrapper.classList.toggle("open", willOpen);
     trigger.setAttribute("aria-expanded", String(willOpen));
     if (willOpen) {
-      menu.style.minWidth = Math.max(wrapper.offsetWidth, 220) + "px";
+      menu.style.minWidth = Math.max(wrapper.offsetWidth, 180) + "px";
     }
   });
   document.addEventListener("click", (e) => {
