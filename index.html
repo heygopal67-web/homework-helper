@@ -61,11 +61,47 @@
             <input id="fileInput" type="file" accept="image/*" hidden />
           </section>
 
+          <section class="type-in card">
+            <h3 class="type-title">
+              <i class="fa-solid fa-keyboard icon" aria-hidden="true"></i
+              ><span>Type your question</span>
+            </h3>
+            <textarea
+              id="typedQuestion"
+              rows="4"
+              placeholder="Type or paste a homework question here..."
+            ></textarea>
+            <div class="type-actions">
+              <button id="explainTypedBtn" class="btn primary">
+                <i
+                  class="fa-solid fa-wand-magic-sparkles icon"
+                  aria-hidden="true"
+                ></i
+                ><span>Explain</span>
+              </button>
+              <button id="clearTypedBtn" class="btn ghost small">
+                <i class="fa-solid fa-eraser icon" aria-hidden="true"></i
+                ><span>Clear</span>
+              </button>
+            </div>
+          </section>
+
           <section
             id="progressArea"
             class="progress"
             aria-live="polite"
           ></section>
+
+          <div class="results-toolbar">
+            <button id="speakBtn" class="btn secondary small">
+              <i class="fa-solid fa-volume-high icon" aria-hidden="true"></i
+              ><span>Read Aloud</span>
+            </button>
+            <button id="stopSpeakBtn" class="btn ghost small">
+              <i class="fa-solid fa-stop icon" aria-hidden="true"></i
+              ><span>Stop</span>
+            </button>
+          </div>
 
           <section id="results" class="results" aria-live="polite"></section>
         </section>
