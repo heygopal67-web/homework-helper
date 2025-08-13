@@ -24,6 +24,16 @@ body {
 /* Ensure form controls and buttons inherit the app font */
 button, input, textarea, select, label { font-family: inherit; }
 
+/* Quick font swaps via class on <html> */
+.font-kalam { font-family: 'Kalam', cursive; }
+.font-patrick { font-family: 'Patrick Hand', cursive; }
+.font-caveat { font-family: 'Caveat', cursive; }
+.font-gochi { font-family: 'Gochi Hand', cursive; }
+.font-shantell { font-family: 'Shantell Sans', cursive; }
+.font-inter { font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial; }
+
+.font-select { border: 1px solid #e5e7eb; border-radius: 9999px; padding: 8px 12px; background: #fff; }
+
 .container { width: min(1100px, 92vw); margin: 0 auto; }
 
 .app-header { background: var(--bg); border-bottom: 1px solid rgba(0,0,0,0.06); position: sticky; top: 0; z-index: 20; }

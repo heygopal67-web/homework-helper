@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Kalam:wght@400;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Gochi+Hand&family=Inter:wght@400;600;700&family=Kalam:wght@400;700&family=Patrick+Hand&family=Shantell+Sans:wght@400;600;700&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="styles.css" />
@@ -50,6 +50,15 @@
             <i class="fa-solid fa-bars-staggered icon" aria-hidden="true"></i
             ><span>History</span>
           </button>
+          <label for="fontPicker" class="sr-only">Font</label>
+          <select id="fontPicker" class="font-select" title="Change font">
+            <option value="font-kalam">Kalam (default)</option>
+            <option value="font-patrick">Patrick Hand</option>
+            <option value="font-caveat">Caveat</option>
+            <option value="font-gochi">Gochi Hand</option>
+            <option value="font-shantell">Shantell Sans</option>
+            <option value="font-inter">Inter</option>
+          </select>
           <button
             id="sketchToggleBtn"
             class="btn ghost small"

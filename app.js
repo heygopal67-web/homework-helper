@@ -23,6 +23,7 @@ const sketchOverlay = document.getElementById("sketchOverlay");
 const sketchCanvas = document.getElementById("sketchCanvas");
 const sketchClearBtn = document.getElementById("sketchClearBtn");
 const sketchCloseBtn = document.getElementById("sketchCloseBtn");
+const fontPicker = document.getElementById('fontPicker');
 
 // Camera modal elements
 const cameraModal = document.getElementById("cameraModal");
@@ -531,6 +532,14 @@ window.addEventListener("DOMContentLoaded", () => {
   if (!layout || !sidebar) return;
   sidebar.classList.toggle("hidden", hidden);
   layout.classList.toggle("sidebar-hidden", hidden);
+});
+
+// Font switcher
+fontPicker?.addEventListener('change', () => {
+  const val = fontPicker.value || 'font-kalam';
+  const htmlEl = document.documentElement;
+  htmlEl.classList.remove('font-kalam','font-patrick','font-caveat','font-gochi','font-shantell','font-inter');
+  htmlEl.classList.add(val);
 });
 
 // Sketch overlay logic
