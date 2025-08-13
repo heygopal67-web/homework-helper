@@ -1,4 +1,4 @@
-## SolveBuddy
+hey, this is SolveBuddy :)
 
 SolveBuddy is a simple, single-page web app that helps students understand homework questions. You can take a photo, upload an image, or type a question. The app runs OCR on images, asks an AI tutor for step-by-step guidance, and presents clear, readable steps.
 
@@ -32,3 +32,6 @@ No build step or server is required.
 - Works on desktop and mobile in modern browsers.
 
 
+thanks for being here... im glad you read this file and hope u enjoyed this project.
+
+thanks again:)
