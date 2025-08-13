@@ -60,16 +60,9 @@ function setModeDetailed(val) {
   } catch {}
 }
 
+// Backend-managed key, no prompt needed
 async function getApiKeyInteractive() {
-  const existing = readStoredKey();
-  if (existing) return existing;
-  const entered = window.prompt(
-    "Enter your Gemini API key (it will be saved locally in this browser):"
-  );
-  const key = (entered || "").trim();
-  if (!key) return "";
-  saveStoredKey(key);
-  return key;
+  return "server-managed";
 }
 
 function loadHistory() {
@@ -228,43 +221,12 @@ function buildSystemPrompt(questionText) {
   );
 }
 
-async function callGemini(questionText, detailedMode, apiKey) {
+async function callGemini(questionText, detailedMode, apiKeyIgnored) {
   setProgress("Asking AI for guidance...");
-  const systemPrompt = buildSystemPrompt(questionText);
-
-  const detailInstruction = detailedMode
-    ? " Provide a thorough explanation with about 6–9 steps, include a tiny example and a quick tip where helpful."
-    : " Keep it concise with about 3–5 simple steps.";
-
-  const userPrompt =
-    "Mode: " + (detailedMode ? "Detailed" : "Basic") + ". " + detailInstruction;
-
-  const url =
-    "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=" +
-    encodeURIComponent(apiKey);
-
-  const body = {
-    contents: [
-      {
-        role: "user",
-        parts: [
-          {
-            text: systemPrompt + "\n\n" + userPrompt,
-          },
-        ],
-      },
-    ],
-    generationConfig: {
-      temperature: detailedMode ? 0.6 : 0.4,
-    },
-  };
-
-  const response = await fetch(url, {
+  const response = await fetch("/api/gemini", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(body),
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ questionText, detailedMode }),
   });
 
   if (!response.ok) {
@@ -272,12 +234,7 @@ async function callGemini(questionText, detailedMode, apiKey) {
     throw new Error("Gemini error: " + response.status + " " + errText);
   }
   const data = await response.json();
-  const parts = data?.candidates?.[0]?.content?.parts || [];
-  const text = parts
-    .map((p) => p.text || "")
-    .join("\n")
-    .trim();
-  return text;
+  return data && data.text ? String(data.text) : "";
 }
 
 function splitIntoSteps(text) {
