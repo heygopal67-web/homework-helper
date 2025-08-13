@@ -15,7 +15,7 @@
 html, body { height: 100%; }
 body {
   margin: 0;
-  font-family: 'Nunito', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial, 'Apple Color Emoji', 'Segoe UI Emoji';
+ font-family: 'Kalam', cursive;
   color: var(--ink);
   background: var(--bg);
 }
@@ -26,10 +26,10 @@ body {
 .header-inner { display: flex; align-items: center; justify-content: space-between; padding: 16px 0; gap: 12px; }
 .brand { display: flex; align-items: center; gap: 10px; }
 .brand .logo { font-size: 24px; color: var(--primary); }
-.logo-img { height: 32px; width: auto; border-radius: 8px; display: block; }
+.logo-img { height: 40px; width: auto; border-radius: 8px; display: block; }
 .brand h1 {
-  font-family: 'Baloo 2', cursive;
-  font-weight: 800; margin: 0; font-size: 24px;
+  font-family: 'Kalam', cursive;
+  font-weight: 700; margin: 0; font-size: 28px;
   color: #1f2937;
 }
 .icon { margin-right: 8px; }
