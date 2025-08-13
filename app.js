@@ -421,9 +421,14 @@ takePhotoBtn.addEventListener("click", () => {
 });
 
 typeAnswerBtn?.addEventListener("click", () => {
-  if (typeInCard) typeInCard.classList.remove("hidden");
-  typedQuestion?.focus();
-  window.scrollTo({ top: typeInCard?.offsetTop || 0, behavior: "smooth" });
+  if (!typeInCard) return;
+  const willShow = typeInCard.classList.contains("hidden");
+  typeInCard.classList.toggle("hidden", !willShow);
+  typeAnswerBtn.setAttribute("aria-expanded", String(willShow));
+  if (willShow) {
+    typedQuestion?.focus();
+    window.scrollTo({ top: typeInCard.offsetTop || 0, behavior: "smooth" });
+  }
 });
 
 closeCameraModal.addEventListener("click", closeCamera);
