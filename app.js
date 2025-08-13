@@ -1,4 +1,4 @@
-// Homework Helper AI - Vanilla JS SPA
+// SolveBuddy - Vanilla JS SPA
 
 // DOM elements
 const takePhotoBtn = document.getElementById("takePhotoBtn");
@@ -27,7 +27,13 @@ const STORAGE_KEYS = {
 };
 
 function setProgress(message) {
-  progressArea.textContent = message || "";
+  if (message) {
+    progressArea.classList.add("loading");
+    progressArea.textContent = message;
+  } else {
+    progressArea.classList.remove("loading");
+    progressArea.textContent = "";
+  }
 }
 
 // No key storage; key is embedded above per request
