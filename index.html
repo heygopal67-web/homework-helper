@@ -11,12 +11,20 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
   </head>
   <body>
     <header class="app-header">
       <div class="container header-inner">
         <div class="brand">
-          <div class="logo" aria-hidden="true">🎒</div>
+          <div class="logo" aria-hidden="true">
+            <i class="fa-solid fa-graduation-cap"></i>
+          </div>
           <h1>Homework Helper AI</h1>
         </div>
         <div class="controls">
@@ -43,10 +51,12 @@
         <section class="content">
           <section class="actions">
             <button id="takePhotoBtn" class="btn primary big">
-              📸 Take Photo
+              <i class="fa-solid fa-camera icon" aria-hidden="true"></i
+              ><span>Take Photo</span>
             </button>
             <button id="uploadPhotoBtn" class="btn secondary big">
-              ⬆️ Upload Photo
+              <i class="fa-solid fa-upload icon" aria-hidden="true"></i
+              ><span>Upload Photo</span>
             </button>
             <input id="fileInput" type="file" accept="image/*" hidden />
           </section>
@@ -61,8 +71,14 @@
         </section>
         <aside class="sidebar">
           <div class="history-header">
-            <h2>History</h2>
-            <button id="clearHistoryBtn" class="btn ghost small">Clear</button>
+            <h2>
+              <i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i>
+              History
+            </h2>
+            <button id="clearHistoryBtn" class="btn ghost small">
+              <i class="fa-solid fa-trash icon" aria-hidden="true"></i
+              ><span>Clear</span>
+            </button>
           </div>
           <div id="historyList" class="history-list"></div>
         </aside>
@@ -76,7 +92,7 @@
         <div class="modal-header">
           <h3>Take a Photo</h3>
           <button class="icon-btn" id="xCameraModal" aria-label="Close">
-            ✖
+            <i class="fa-solid fa-xmark"></i>
           </button>
         </div>
         <div class="camera-area">
@@ -84,7 +100,10 @@
           <canvas id="cameraCanvas"></canvas>
         </div>
         <div class="modal-actions">
-          <button id="captureBtn" class="btn primary">Capture</button>
+          <button id="captureBtn" class="btn primary">
+            <i class="fa-solid fa-camera icon" aria-hidden="true"></i
+            ><span>Capture</span>
+          </button>
         </div>
       </div>
     </div>
