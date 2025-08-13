@@ -143,6 +143,10 @@ input:checked + .slider:before { transform: translateX(24px); }
 }
 .sketch-toolbar { position: absolute; bottom: 16px; right: 16px; display: flex; gap: 8px; }
 
+/* Floating controls: History and Sketch at bottom-left */
+#toggleSidebarBtn { position: fixed; left: 16px; bottom: 16px; z-index: 60; box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
+#sketchToggleBtn { position: fixed; left: 16px; bottom: 72px; z-index: 60; box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
+
 @media (min-width: 960px) {
   .layout { grid-template-columns: 320px 1fr; grid-template-areas: 'sidebar content'; }
   .layout.sidebar-hidden { grid-template-columns: 0 1fr; }
