@@ -52,7 +52,7 @@ const xCameraModal = document.getElementById("xCameraModal");
 const captureBtn = document.getElementById("captureBtn");
 
 // WARNING: Embedding API keys in client code is not secure. You asked to use JS only.
-const GEMINI_API_KEY = "AIzaSyAOqqVRGcnRuz_qVAV0pq_Y6gbhK-9h2wQ";
+const GEMINI_API_KEY = "AIzaSyDLtC9Kx-RO7OqLlUSdYhWBPPQ6zByc3Hs";
 
 const STORAGE_KEYS = {
   history: "hhai_history_v1",
