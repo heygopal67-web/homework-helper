@@ -15,6 +15,7 @@ const explainTypedBtn = document.getElementById("explainTypedBtn");
 const clearTypedBtn = document.getElementById("clearTypedBtn");
 const speakBtn = document.getElementById("speakBtn");
 const stopSpeakBtn = document.getElementById("stopSpeakBtn");
+const resultsToolbar = document.getElementById("resultsToolbar");
 
 // Camera modal elements
 const cameraModal = document.getElementById("cameraModal");
@@ -148,6 +149,8 @@ function renderSteps(steps) {
     card.appendChild(content);
     results.appendChild(card);
   });
+  if (resultsToolbar)
+    resultsToolbar.classList.toggle("hidden", steps.length === 0);
 }
 
 // Text-to-Speech helpers
@@ -356,6 +359,8 @@ async function handleTypedQuestion() {
     const steps = splitIntoSteps(aiText);
     renderSteps(steps);
     setProgress("Done!");
+    if (resultsToolbar)
+      resultsToolbar.classList.toggle("hidden", steps.length === 0);
     addToHistory(text, steps, detailedMode);
   } catch (err) {
     console.error(err);
@@ -449,6 +454,7 @@ stopSpeakBtn.addEventListener("click", stopSpeaking);
 (function init() {
   detailToggle.checked = getModeDetailed();
   renderHistory();
+  if (resultsToolbar) resultsToolbar.classList.add("hidden");
 })();
 
 // Sidebar toggle

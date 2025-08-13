@@ -96,6 +96,7 @@ input:checked + .slider:before { transform: translateX(24px); }
 .type-actions { display: flex; gap: 8px; margin-top: 10px; }
 
 .results-toolbar { display: flex; gap: 8px; align-items: center; margin: 6px 0 8px; }
+.results-toolbar.hidden { display: none; }
 
 .history { margin-top: 8px; }
 .history-header { display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; background: #ffffff; padding-bottom: 6px; z-index: 1; }
