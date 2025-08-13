@@ -23,7 +23,7 @@ const sketchOverlay = document.getElementById("sketchOverlay");
 const sketchCanvas = document.getElementById("sketchCanvas");
 const sketchClearBtn = document.getElementById("sketchClearBtn");
 const sketchCloseBtn = document.getElementById("sketchCloseBtn");
-const fontPicker = document.getElementById('fontPicker');
+const fontPicker = document.getElementById("fontPicker");
 
 // Camera modal elements
 const cameraModal = document.getElementById("cameraModal");
@@ -40,6 +40,7 @@ const STORAGE_KEYS = {
   history: "hhai_history_v1",
   mode: "hhai_mode_detailed",
   sidebarHidden: "hhai_sidebar_hidden",
+  fontClass: "hhai_font_class",
 };
 
 function setProgress(message) {
@@ -535,12 +536,41 @@ window.addEventListener("DOMContentLoaded", () => {
 });
 
 // Font switcher
-fontPicker?.addEventListener('change', () => {
-  const val = fontPicker.value || 'font-kalam';
+fontPicker?.addEventListener("change", () => {
+  const val = fontPicker.value || "font-kalam";
   const htmlEl = document.documentElement;
-  htmlEl.classList.remove('font-kalam','font-patrick','font-caveat','font-gochi','font-shantell','font-inter');
+  htmlEl.classList.remove(
+    "font-kalam",
+    "font-patrick",
+    "font-caveat",
+    "font-gochi",
+    "font-shantell",
+    "font-inter"
+  );
   htmlEl.classList.add(val);
+  try {
+    localStorage.setItem(STORAGE_KEYS.fontClass, val);
+  } catch {}
 });
+
+// Apply saved font on load
+(() => {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEYS.fontClass);
+    if (!saved) return;
+    const htmlEl = document.documentElement;
+    htmlEl.classList.remove(
+      "font-kalam",
+      "font-patrick",
+      "font-caveat",
+      "font-gochi",
+      "font-shantell",
+      "font-inter"
+    );
+    htmlEl.classList.add(saved);
+    if (fontPicker) fontPicker.value = saved;
+  } catch {}
+})();
 
 // Sketch overlay logic
 let sketchCtx = null;
