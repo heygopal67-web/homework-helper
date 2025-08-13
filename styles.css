@@ -68,6 +68,12 @@ html.font-shantell { font-family: 'Shantell Sans', cursive !important; }
 html.font-inter { font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial !important; }
 
 .font-select { border: 1px solid #e5e7eb; border-radius: 9999px; padding: 8px 12px; background: #fff; }
+.font-select option[value="font-patrick"] { font-family: 'Patrick Hand', cursive; }
+.font-select option[value="font-kalam"] { font-family: 'Kalam', cursive; }
+.font-select option[value="font-caveat"] { font-family: 'Caveat', cursive; }
+.font-select option[value="font-gochi"] { font-family: 'Gochi Hand', cursive; }
+.font-select option[value="font-shantell"] { font-family: 'Shantell Sans', cursive; }
+.font-select option[value="font-inter"] { font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial; }
 
 .container { width: min(1100px, 92vw); margin: 0 auto; }
 

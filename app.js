@@ -567,6 +567,10 @@ fontPicker?.addEventListener("change", () => {
     "font-inter"
   );
   htmlEl.classList.add(val);
+  // Reflect selection on the <select> itself so the closed control shows sample font
+  fontPicker.style.fontFamily = getComputedStyle(
+    document.documentElement
+  ).getPropertyValue("font-family");
   try {
     localStorage.setItem(STORAGE_KEYS.fontClass, val);
   } catch {}
@@ -588,6 +592,11 @@ fontPicker?.addEventListener("change", () => {
     );
     htmlEl.classList.add(toApply);
     if (fontPicker) fontPicker.value = toApply;
+    if (fontPicker) {
+      fontPicker.style.fontFamily = getComputedStyle(
+        document.documentElement
+      ).getPropertyValue("font-family");
+    }
   } catch {}
 })();
 
