@@ -9,6 +9,7 @@ const results = document.getElementById("results");
 const detailToggle = document.getElementById("detailToggle");
 const historyList = document.getElementById("historyList");
 const clearHistoryBtn = document.getElementById("clearHistoryBtn");
+const toggleSidebarBtn = document.getElementById("toggleSidebarBtn");
 const typedQuestion = document.getElementById("typedQuestion");
 const explainTypedBtn = document.getElementById("explainTypedBtn");
 const clearTypedBtn = document.getElementById("clearTypedBtn");
@@ -29,6 +30,7 @@ const GEMINI_API_KEY = "AIzaSyAOqqVRGcnRuz_qVAV0pq_Y6gbhK-9h2wQ";
 const STORAGE_KEYS = {
   history: "hhai_history_v1",
   mode: "hhai_mode_detailed",
+  sidebarHidden: "hhai_sidebar_hidden",
 };
 
 function setProgress(message) {
@@ -54,6 +56,19 @@ function getModeDetailed() {
 function setModeDetailed(val) {
   try {
     localStorage.setItem(STORAGE_KEYS.mode, val ? "1" : "0");
+  } catch {}
+}
+
+function getSidebarHidden() {
+  try {
+    return localStorage.getItem(STORAGE_KEYS.sidebarHidden) === "1";
+  } catch {
+    return false;
+  }
+}
+function setSidebarHidden(hidden) {
+  try {
+    localStorage.setItem(STORAGE_KEYS.sidebarHidden, hidden ? "1" : "0");
   } catch {}
 }
 
@@ -435,3 +450,24 @@ stopSpeakBtn.addEventListener("click", stopSpeaking);
   detailToggle.checked = getModeDetailed();
   renderHistory();
 })();
+
+// Sidebar toggle
+toggleSidebarBtn?.addEventListener("click", () => {
+  const layout = document.querySelector(".layout");
+  const sidebar = document.querySelector(".sidebar");
+  if (!layout || !sidebar) return;
+  const willHide = !sidebar.classList.contains("hidden");
+  sidebar.classList.toggle("hidden", willHide);
+  layout.classList.toggle("sidebar-hidden", willHide);
+  setSidebarHidden(willHide);
+});
+
+// Apply saved sidebar state after DOM ready
+window.addEventListener("DOMContentLoaded", () => {
+  const hidden = getSidebarHidden();
+  const layout = document.querySelector(".layout");
+  const sidebar = document.querySelector(".sidebar");
+  if (!layout || !sidebar) return;
+  sidebar.classList.toggle("hidden", hidden);
+  layout.classList.toggle("sidebar-hidden", hidden);
+});
