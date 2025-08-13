@@ -552,6 +552,8 @@ window.addEventListener("DOMContentLoaded", () => {
     bgmIcon?.classList.add("fa-volume-xmark");
     bgmLabel && (bgmLabel.textContent = "Music");
   }
+  // Initialize custom rounded font picker
+  initCustomFontPicker();
 });
 
 // Font switcher
@@ -571,6 +573,13 @@ fontPicker?.addEventListener("change", () => {
   fontPicker.style.fontFamily = getComputedStyle(
     document.documentElement
   ).getPropertyValue("font-family");
+  // Update custom trigger (if using custom dropdown)
+  const customTrigger = document.querySelector(".font-select-custom .trigger");
+  if (customTrigger && fontPicker.selectedIndex >= 0) {
+    const opt = fontPicker.options[fontPicker.selectedIndex];
+    customTrigger.textContent = opt.textContent;
+    customTrigger.style.fontFamily = opt.style?.fontFamily || "";
+  }
   try {
     localStorage.setItem(STORAGE_KEYS.fontClass, val);
   } catch {}
@@ -599,6 +608,67 @@ fontPicker?.addEventListener("change", () => {
     }
   } catch {}
 })();
+
+// Build a custom, rounded dropdown for the font picker so the menu has rounded corners and per-option fonts
+function initCustomFontPicker() {
+  if (!fontPicker) return;
+  const wrapper = document.createElement("div");
+  wrapper.className = "font-select-custom";
+  const trigger = document.createElement("button");
+  trigger.type = "button";
+  trigger.className = "trigger";
+  trigger.setAttribute("aria-haspopup", "listbox");
+  trigger.setAttribute("aria-expanded", "false");
+  const selected =
+    fontPicker.options[fontPicker.selectedIndex] || fontPicker.options[0];
+  if (selected) {
+    trigger.textContent = selected.textContent;
+    trigger.style.fontFamily = selected.style?.fontFamily || "";
+  }
+  const menu = document.createElement("ul");
+  menu.className = "menu";
+  menu.setAttribute("role", "listbox");
+  Array.from(fontPicker.options).forEach((opt) => {
+    const li = document.createElement("li");
+    li.textContent = opt.textContent;
+    li.dataset.value = opt.value;
+    li.style.fontFamily = opt.style?.fontFamily || "";
+    li.setAttribute("role", "option");
+    if (opt.selected) li.setAttribute("aria-selected", "true");
+    li.addEventListener("click", () => {
+      wrapper.classList.remove("open");
+      trigger.setAttribute("aria-expanded", "false");
+      fontPicker.value = opt.value;
+      fontPicker.dispatchEvent(new Event("change", { bubbles: true }));
+      Array.from(menu.children).forEach((n) =>
+        n.removeAttribute("aria-selected")
+      );
+      li.setAttribute("aria-selected", "true");
+    });
+    menu.appendChild(li);
+  });
+  trigger.addEventListener("click", () => {
+    const willOpen = !wrapper.classList.contains("open");
+    document
+      .querySelectorAll(".font-select-custom.open")
+      .forEach((el) => el.classList.remove("open"));
+    wrapper.classList.toggle("open", willOpen);
+    trigger.setAttribute("aria-expanded", String(willOpen));
+    if (willOpen) {
+      menu.style.minWidth = Math.max(wrapper.offsetWidth, 220) + "px";
+    }
+  });
+  document.addEventListener("click", (e) => {
+    if (!wrapper.contains(e.target)) {
+      wrapper.classList.remove("open");
+      trigger.setAttribute("aria-expanded", "false");
+    }
+  });
+  fontPicker.insertAdjacentElement("afterend", wrapper);
+  wrapper.appendChild(trigger);
+  wrapper.appendChild(menu);
+  fontPicker.style.display = "none";
+}
 
 // Background music controls
 const BGM_KEY = "hhai_bgm_enabled";
