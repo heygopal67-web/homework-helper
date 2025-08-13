@@ -21,6 +21,27 @@ body {
   background: var(--bg);
 }
 
+/* Decorative background image bottom-right */
+body::after {
+  content: "";
+  position: fixed;
+  right: -10px;
+  bottom: -40px;
+  width: 340px;
+  height: 340px;
+  background: url('elements.png') no-repeat center/contain;
+  opacity: 0.2;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@media (max-width: 900px) {
+  body::after { width: 260px; height: 260px; right: -10px; bottom: -10px; opacity: 0.18; }
+}
+@media (max-width: 600px) {
+  body::after { width: 0; height: 0; opacity: 0; }
+}
+
 /* Ensure form controls and buttons inherit the app font */
 button, input, textarea, select, label { font-family: inherit; }
 
