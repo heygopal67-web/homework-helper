@@ -190,10 +190,8 @@ input:checked + .slider:before { transform: translateX(24px); }
   width: 18px;
   height: 18px;
   margin-left: 8px;
-  background: no-repeat center/16px 16px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%2310b981' d='M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z'/%3E%3C/svg%3E") no-repeat center/16px 16px;
   border: none;
-  /* Use mask to apply your theme color dynamically */
-  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M9 16.17 4.83 12l-1.42 1.41L9 19 21 7
 }
 
 @keyframes spin { to { transform: rotate(360deg); } }
